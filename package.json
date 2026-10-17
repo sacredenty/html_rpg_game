@@ -1,0 +1,20 @@
+{
+  "name": "rpg-adventure",
+  "version": "1.0.0",
+  "description": "Ultima-inspired web-based RPG game with tile exploration, combat, and quests",
+  "main": "index.html",
+  "scripts": {
+    "start": "open index.html",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "rpg",
+    "browser-game",
+    "html5",
+    "canvas",
+    "medieval",
+    "adventure"
+  ],
+  "author": "",
+  "license": "MIT"
+}

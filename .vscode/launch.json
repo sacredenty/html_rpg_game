@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Game in Browser",
+            "type": "chrome",
+            "request": "launch",
+            "url": "file://${workspaceFolder}/index.html",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "Debug Game (Firefox)",
+            "type": "firefox",
+            "request": "launch",
+            "url": "file://${workspaceFolder}/index.html",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}
