@@ -27,7 +27,7 @@ Explore a medieval world, fight monsters, complete quests, and become a legendar
 - **Explore Button (✨)**: Move through the world and discover new areas
 - **Attack Button (⚔️)**: Fight nearby monsters for XP and gold
 - **Rest Button (💤)**: Heal your wounds (15-25 HP)
-- **Save Game (💾)**: Save your progress anytime
+- **Save Game (💾)**: Choose one of three slots to save your progress
 - **Talk / Trade (💬)**: Interact with a nearby King or Merchant; you can also click an NPC on the map
 
 ### World Layout
@@ -52,7 +52,7 @@ Explore a medieval world, fight monsters, complete quests, and become a legendar
 
 ### Character Stats
 - **HP (Health)**: Your life points. Start with 100/100
-- **MP (Mana)**: Spells consume mana. Start with 50/50
+- **MP (Mana)**: Spells consume mana. Mages start with 90 MP, Rangers with 25 MP, and Warriors do not use mana.
 - **Level and XP**: Defeat monsters and complete quests to earn XP; the progress bar shows how much XP is needed for your next level
 - **Strength**: Physical attack power
 - **Magic**: Increases spell damage and healing
@@ -63,7 +63,7 @@ Explore a medieval world, fight monsters, complete quests, and become a legendar
 2. Use health potions before taking damage
 3. Leveling up increases your attributes and max HP/MP, then restores both pools!
 4. Don't forget to save after defeating tough enemies
-5. Cast Arcane Bolt or Flame Burst on nearby enemies, or use Healing Light when hurt
+5. Mages can cast damage and healing spells; Rangers can use Healing Light
 
 ### Quest System
 - Talk to King Alaric near the starting area to accept quests
@@ -80,7 +80,7 @@ A: Fight monsters to gain XP, level up, and increase your stats. Find weapons in
 A: Game over screen shows your final level. Your save is automatically stored. Load it to continue!
 
 **Q: Can I save multiple games?**
-A: No. The game has one save slot, and each manual save or automatic save on death replaces it.
+A: Yes. Choose among three save slots when saving or loading. Overwriting an occupied slot requires confirmation.
 
 **Q: Where can I find items?**
 A: Items spawn randomly when you explore. Check the forest and mountain areas!

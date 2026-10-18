@@ -126,6 +126,10 @@ const GameCombat = {
             Utils.showMessage('That spell is not available.', 'error');
             return;
         }
+        if (!this.player.canCastSpell(spellId)) {
+            Utils.showMessage(`${this.player.className} cannot cast ${spell.name}.`, 'error');
+            return;
+        }
 
         let target = null;
         if (spell.type === 'damage') {

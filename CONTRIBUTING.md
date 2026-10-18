@@ -208,7 +208,7 @@ const x = 5; // arbitrary value
 ### Error Handling
 ```javascript
 try {
-    localStorage.setItem('rpg_save', JSON.stringify(gameState));
+    localStorage.setItem('rpg_save_slot_1', JSON.stringify(gameState));
 } catch (error) {
     console.error('Failed to save game:', error);
     return false;

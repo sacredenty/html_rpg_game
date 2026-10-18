@@ -130,6 +130,73 @@
             </div>
         </main>
 
+        <dialog id="startup-menu" aria-labelledby="startup-title">
+            <section class="startup-content">
+                <h2 id="startup-title">Medieval RPG Adventure</h2>
+                <p id="startup-save-status" aria-live="polite"></p>
+                <div class="startup-actions">
+                    <button id="load-saved-game" type="button">Load Saved Game</button>
+                    <button id="new-adventure" type="button">Start New Adventure</button>
+                </div>
+            </section>
+        </dialog>
+
+        <dialog id="save-slot-dialog" aria-labelledby="save-slot-title">
+            <section class="save-slot-content">
+                <h2 id="save-slot-title">Choose a Save Slot</h2>
+                <p id="save-slot-instructions"></p>
+                <div id="save-slot-list" class="save-slot-list"></div>
+                <button id="close-save-slots" type="button">Cancel</button>
+            </section>
+        </dialog>
+
+        <dialog id="character-creation" aria-labelledby="character-creation-title">
+            <form id="character-creation-form">
+                <h2 id="character-creation-title">Create Your Hero</h2>
+                <p id="creation-progress" aria-live="polite">Step 1 of 3: Identity</p>
+                <section id="character-step-identity" class="character-step">
+                    <p>Every great adventure starts with a name.</p>
+                    <label for="hero-name">Hero name</label>
+                    <input id="hero-name" name="hero-name" type="text" maxlength="24" autocomplete="off" required>
+                </section>
+                <section id="character-step-class" class="character-step" hidden>
+                    <p>Choose the path that will shape your starting abilities.</p>
+                    <canvas id="class-preview" width="80" height="80" aria-label="Preview of the selected hero class"></canvas>
+                    <fieldset id="hero-class-options">
+                        <legend>Choose your class</legend>
+                        <label class="class-choice">
+                            <input type="radio" name="hero-class" value="warrior" checked>
+                            <span><strong>Warrior</strong><small>Strength and endurance</small></span>
+                        </label>
+                        <label class="class-choice">
+                            <input type="radio" name="hero-class" value="mage">
+                            <span><strong>Mage</strong><small>Magic and mana</small></span>
+                        </label>
+                        <label class="class-choice">
+                            <input type="radio" name="hero-class" value="ranger">
+                            <span><strong>Ranger</strong><small>Agility and versatility</small></span>
+                        </label>
+                    </fieldset>
+                    <p id="class-description" aria-live="polite"></p>
+                    <p id="class-stat-summary"></p>
+                </section>
+                <section id="character-step-review" class="character-step" tabindex="-1" hidden>
+                    <p>Review your hero before setting out.</p>
+                    <dl class="character-review">
+                        <div><dt>Name</dt><dd id="review-hero-name"></dd></div>
+                        <div><dt>Class</dt><dd id="review-hero-class"></dd></div>
+                        <div><dt>Calling</dt><dd id="review-class-description"></dd></div>
+                        <div><dt>Starting abilities</dt><dd id="review-class-stats"></dd></div>
+                    </dl>
+                </section>
+                <div class="character-navigation">
+                    <button id="character-back" type="button" hidden>Back</button>
+                    <button id="character-next" type="button">Continue</button>
+                    <button id="character-submit" type="submit" hidden>Begin Adventure</button>
+                </div>
+            </form>
+        </dialog>
+
         <footer id="message-area"></footer>
     </div>
 

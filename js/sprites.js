@@ -6,6 +6,16 @@ const SpriteRenderer = {
             B: '#527ed0', r: '#963e4c', R: '#d56a65', y: '#f4ca68', Y: '#f4ca68',
             w: '#f2e8cf', s: '#3c4057'
         },
+        mage: {
+            k: '#20243a', h: '#a95843', H: '#edba91', m: '#553779',
+            M: '#8860b5', p: '#352b53', P: '#6c4a9b', r: '#963e4c',
+            y: '#f4ca68', Y: '#f4ca68', w: '#f2e8cf'
+        },
+        ranger: {
+            k: '#20243a', h: '#a95843', H: '#edba91', b: '#31533e',
+            B: '#5f8b54', r: '#80513e', R: '#bf8650', y: '#f4ca68',
+            Y: '#f4ca68', w: '#f2e8cf', s: '#3c4057'
+        },
         king: {
             k: '#20243a', h: '#a95843', H: '#edba91', b: '#284b91',
             B: '#527ed0', r: '#963e4c', R: '#d56a65', y: '#f4ca68', Y: '#f4ca68',
@@ -44,6 +54,42 @@ const SpriteRenderer = {
             '...krrrrk...',
             '...ks..sk...',
             '...ks..sk...',
+            '..kk....kk..',
+            '..kk....kk..',
+            '..ww....ww..'
+        ],
+        mage: [
+            '......Y.....',
+            '.....YyY....',
+            '....YyyyY...',
+            '...kYYYYYk..',
+            '..kpppppppk.',
+            '..kphHHHppk.',
+            '..kpHhHpppk.',
+            '...kppppk....',
+            '....krrk....',
+            '...kmmmmk...',
+            '..kMmmmmMk..',
+            '..kmmmmmmk..',
+            '..kmmYmmmk..',
+            '...krrrrk...',
+            '..kk....kk..',
+            '..ww....ww..'
+        ],
+        ranger: [
+            '....kkkk....',
+            '...kBBBBk...',
+            '..kBBBBBBk..',
+            '..khhhhkk...',
+            '..khHHHHk...',
+            '..khHhHHk...',
+            '...kHHHkk...',
+            '....krrk....',
+            '...kbbbbk...',
+            '..kBbbbbBk..',
+            '..kbbbbbbk..',
+            '..kbbYbbbk..',
+            '...krrrrk...',
             '..kk....kk..',
             '..kk....kk..',
             '..ww....ww..'
@@ -314,6 +360,7 @@ const SpriteRenderer = {
         const tileSize = game.TILE_SIZE;
         const tileX = game.player.x * tileSize;
         const tileY = game.player.y * tileSize;
+        const classId = this.palettes[game.player.classId] ? game.player.classId : 'hero';
 
         ctx.fillStyle = 'rgba(250, 204, 21, 0.14)';
         ctx.fillRect(tileX + 2, tileY + 2, tileSize - 4, tileSize - 4);
@@ -324,12 +371,7 @@ const SpriteRenderer = {
         ctx.strokeStyle = '#facc15';
         ctx.strokeRect(tileX + 2, tileY + 2, tileSize - 4, tileSize - 4);
 
-        this.drawPixelSprite(game, this.patterns.hero, this.palettes.hero, game.player.x, game.player.y);
-        const pixel = game.TILE_SIZE / 16;
-        ctx.fillStyle = '#e8e6d4';
-        ctx.fillRect((game.player.x + 0.5) * tileSize + 10, (game.player.y + 0.5) * tileSize, pixel * 2, pixel * 7);
-        ctx.fillStyle = '#f4ca68';
-        ctx.fillRect((game.player.x + 0.5) * tileSize + 9, (game.player.y + 0.5) * tileSize + pixel * 5, pixel * 4, pixel * 2);
+        this.drawHeroAppearance(game, classId, game.player.x, game.player.y);
 
         const centerX = (game.player.x + 0.5) * tileSize;
         const markerY = tileY - 14;
@@ -344,6 +386,52 @@ const SpriteRenderer = {
         ctx.stroke();
         ctx.fillStyle = '#facc15';
         ctx.fill();
+    },
+
+    drawHeroAppearance(game, classId, worldX, worldY) {
+        const ctx = game.ctx;
+        const tileSize = game.TILE_SIZE;
+        const palette = this.palettes[classId] || this.palettes.hero;
+        const pattern = this.patterns[classId] || this.patterns.hero;
+        this.drawPixelSprite(game, pattern, palette, worldX, worldY);
+
+        const centerX = (worldX + 0.5) * tileSize;
+        const topY = worldY * tileSize;
+        const pixel = tileSize / 16;
+        if (classId === 'mage') {
+            ctx.strokeStyle = '#8b5e3c';
+            ctx.lineWidth = Math.max(2, pixel);
+            ctx.beginPath();
+            ctx.moveTo(centerX + 13, topY + 34);
+            ctx.lineTo(centerX + 13, topY + 11);
+            ctx.stroke();
+            ctx.fillStyle = '#c4b5fd';
+            ctx.beginPath();
+            ctx.arc(centerX + 13, topY + 9, pixel * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#fef3c7';
+            ctx.beginPath();
+            ctx.arc(centerX + 13, topY + 9, pixel * 0.6, 0, Math.PI * 2);
+            ctx.fill();
+        } else if (classId === 'ranger') {
+            ctx.strokeStyle = '#8b5e3c';
+            ctx.lineWidth = Math.max(2, pixel);
+            ctx.beginPath();
+            ctx.moveTo(centerX + 9, topY + 11);
+            ctx.quadraticCurveTo(centerX + 23, topY + 22, centerX + 9, topY + 34);
+            ctx.stroke();
+            ctx.strokeStyle = '#e7d9b8';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(centerX + 9, topY + 11);
+            ctx.lineTo(centerX + 9, topY + 34);
+            ctx.stroke();
+        } else {
+            ctx.fillStyle = '#e8e6d4';
+            ctx.fillRect(centerX + 10, topY + 20, pixel * 2, pixel * 7);
+            ctx.fillStyle = '#f4ca68';
+            ctx.fillRect(centerX + 9, topY + 25, pixel * 4, pixel * 2);
+        }
     },
 
     drawMonster(game, monster) {

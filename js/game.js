@@ -39,6 +39,10 @@ const Game = {
     
     // Game state
     gameState: 'start', // start, playing, gameover
+    characterCreationStep: 0,
+    currentSaveSlot: null,
+    saveSlotMode: 'load',
+    saveSlotReturnToStartup: false,
     
     // Initialize the game
     init() {
@@ -70,6 +74,8 @@ const Game = {
         
         // Setup event listeners
         this.setupEventListeners();
+        this.updateStartupAvailability();
+        document.getElementById('startup-menu').showModal();
     },
 
     generateWorld() {
@@ -832,6 +838,10 @@ const Game = {
             return;
         }
         const effect = itemTemplate.effect();
+        if (effect.mp && this.player.maxMp === 0) {
+            Utils.showMessage(`${this.player.className} cannot use mana potions.`, 'warning');
+            return;
+        }
         
         // Apply effects
         if (effect.hp) this.player.hp = Math.min(this.player.maxHp, this.player.hp + effect.hp);
@@ -1566,6 +1576,46 @@ const Game = {
         document.addEventListener('pointerdown', () => GameAudio.unlock(), { once: true });
         document.addEventListener('keydown', () => GameAudio.unlock(), { once: true });
 
+        document.getElementById('load-saved-game').addEventListener('click', () => {
+            this.openSaveSlotPicker('load', true);
+        });
+        document.getElementById('new-adventure').addEventListener('click', () => {
+            document.getElementById('startup-menu').close();
+            this.characterCreationStep = 0;
+            this.renderCharacterCreationStep();
+            document.getElementById('character-creation').showModal();
+        });
+        document.getElementById('close-save-slots').addEventListener('click', () => {
+            document.getElementById('save-slot-dialog').close();
+        });
+        document.getElementById('save-slot-dialog').addEventListener('close', () => {
+            if (this.saveSlotReturnToStartup) document.getElementById('startup-menu').showModal();
+        });
+        document.getElementById('character-creation-form').addEventListener('submit', event => {
+            event.preventDefault();
+            if (this.characterCreationStep < 2) {
+                this.advanceCharacterCreation();
+            } else {
+                const name = document.getElementById('hero-name').value.trim();
+                const classId = document.querySelector('input[name="hero-class"]:checked')?.value;
+                document.getElementById('hero-name').setCustomValidity('');
+                this.startAdventure(name, classId);
+            }
+        });
+        document.getElementById('character-next').addEventListener('click', () =>
+            this.advanceCharacterCreation()
+        );
+        document.getElementById('character-back').addEventListener('click', () => {
+            this.characterCreationStep = Math.max(0, this.characterCreationStep - 1);
+            this.renderCharacterCreationStep();
+        });
+        document.getElementById('hero-name').addEventListener('input', event => {
+            event.currentTarget.setCustomValidity('');
+        });
+        document.querySelectorAll('input[name="hero-class"]').forEach(input => {
+            input.addEventListener('change', () => this.updateClassDescription());
+        });
+
         // Directional movement buttons
         document.getElementById('move-north').addEventListener('click', () => this.moveNorth());
         document.getElementById('move-south').addEventListener('click', () => this.moveSouth());
@@ -1584,7 +1634,7 @@ const Game = {
         document.getElementById('spell-select').addEventListener('change', () => this.updateSpellDisplay());
         document.getElementById('interact-btn').addEventListener('click', () => this.interact());
         document.getElementById('save-btn').addEventListener('click', () => this.saveGame());
-        document.getElementById('load-btn').addEventListener('click', () => this.loadGame());
+        document.getElementById('load-btn').addEventListener('click', () => this.openSaveSlotPicker('load'));
         document.getElementById('music-toggle').addEventListener('click', event => {
             const enabled = !GameAudio.musicEnabled;
             GameAudio.setMusicEnabled(enabled);
@@ -1613,7 +1663,11 @@ const Game = {
         });
         
         document.getElementById('use-item-btn').addEventListener('click', () => {
-            const usableItems = this.player.inventory.filter(item => !Entities.Items[item.type]?.equipmentSlot);
+            const usableItems = this.player.inventory.filter(item => {
+                const itemTemplate = Entities.Items[item.type];
+                const effect = itemTemplate?.effect?.();
+                return !itemTemplate?.equipmentSlot && !(effect?.mp && this.player.maxMp === 0);
+            });
             if (usableItems.length > 0) {
                 const itemId = usableItems[Utils.random(0, usableItems.length - 1)].id;
                 this.useItem(itemId);
@@ -1633,20 +1687,26 @@ const Game = {
                 this.player.inventory.forEach(item => {
                     const itemTemplate = Entities.Items[item.type];
                     const isEquipment = Boolean(itemTemplate?.equipmentSlot);
+                    const itemEffect = itemTemplate?.effect?.();
+                    const unavailable = Boolean(itemEffect?.mp && this.player.maxMp === 0);
                     html += `
                         <div class="inventory-item">
                             <span class="inventory-item-name"><span>${item.symbol}</span> ${item.name}</span>
                             <span class="inventory-item-actions">
                                 ${isEquipment
                                     ? `<button type="button" data-equip-item="${item.id}">Equip</button>`
-                                    : `<button type="button" data-use-item="${item.id}">Use</button>`}
+                                    : `<button type="button" data-use-item="${item.id}" ${unavailable ? 'disabled' : ''}>${unavailable ? 'No mana' : 'Use'}</button>`}
                             </span>
                         </div>
                     `;
                 });
                 list.innerHTML = html;
             }
-            btn.disabled = !this.player.inventory.some(item => !Entities.Items[item.type]?.equipmentSlot);
+            btn.disabled = !this.player.inventory.some(item => {
+                const itemTemplate = Entities.Items[item.type];
+                const effect = itemTemplate?.effect?.();
+                return !itemTemplate?.equipmentSlot && !(effect?.mp && this.player.maxMp === 0);
+            });
 
             list.querySelectorAll('[data-equip-item]').forEach(button => {
                 button.addEventListener('click', () => this.equipItem(button.dataset.equipItem));
@@ -1702,18 +1762,214 @@ const Game = {
         this.updateSpellDisplay();
     },
 
+    updateClassDescription() {
+        const classId = document.querySelector('input[name="hero-class"]:checked')?.value;
+        const playerClass = Entities.PlayerClasses[classId];
+        if (!playerClass) {
+            throw new Error(`Unknown hero class: ${classId}`);
+        }
+        document.getElementById('class-description').textContent = playerClass.description;
+        document.getElementById('class-stat-summary').textContent =
+            `STR ${playerClass.stats.strength} · MAG ${playerClass.stats.magic} · ` +
+            `END ${playerClass.stats.endurance} · AGI ${playerClass.stats.agility} · ` +
+            `HP ${playerClass.maxHp} · MP ${playerClass.maxMp}`;
+        this.drawClassPreview(classId);
+        document.getElementById('review-hero-name').textContent =
+            document.getElementById('hero-name').value.trim();
+        document.getElementById('review-hero-class').textContent = playerClass.name;
+        document.getElementById('review-class-description').textContent = playerClass.description;
+        document.getElementById('review-class-stats').textContent =
+            document.getElementById('class-stat-summary').textContent;
+    },
+
+    updateStartupAvailability() {
+        const loadButton = document.getElementById('load-saved-game');
+        const status = document.getElementById('startup-save-status');
+        try {
+            let hasSave = false;
+            for (let slot = 1; slot <= 3; slot++) {
+                try {
+                    hasSave = Boolean(this.readSaveSlot(slot)?.player) || hasSave;
+                } catch (error) {
+                    console.error(`Failed to check save slot ${slot}:`, error);
+                }
+            }
+            loadButton.disabled = !hasSave;
+            status.textContent = hasSave
+                ? 'Choose a saved adventure to continue from any of the three slots.'
+                : 'No saved adventure found. Start a new adventure to create your hero.';
+        } catch (error) {
+            console.error('Failed to check for a saved game:', error);
+            loadButton.disabled = true;
+            status.textContent = 'Saved games are unavailable because browser storage could not be accessed.';
+        }
+    },
+
+    readSaveSlot(slot) {
+        const stored = localStorage.getItem(this.saveSlotKey(slot)) ??
+            (slot === 1 ? localStorage.getItem('rpg_save') : null);
+        return stored ? JSON.parse(stored) : null;
+    },
+
+    saveSlotKey(slot) {
+        return `rpg_save_slot_${slot}`;
+    },
+
+    openSaveSlotPicker(mode, returnToStartup = false) {
+        this.saveSlotMode = mode;
+        this.saveSlotReturnToStartup = returnToStartup;
+        document.getElementById('save-slot-title').textContent =
+            mode === 'save' ? 'Save Game' : 'Load Game';
+        document.getElementById('save-slot-instructions').textContent =
+            mode === 'save'
+                ? 'Choose a slot. Saving to an occupied slot will ask for confirmation.'
+                : 'Choose a saved adventure to continue.';
+        this.renderSaveSlots();
+        if (returnToStartup) document.getElementById('startup-menu').close();
+        document.getElementById('save-slot-dialog').showModal();
+    },
+
+    renderSaveSlots() {
+        const list = document.getElementById('save-slot-list');
+        list.replaceChildren();
+        for (let slot = 1; slot <= 3; slot++) {
+            const row = document.createElement('div');
+            row.className = 'save-slot';
+            const details = document.createElement('div');
+            details.className = 'save-slot-details';
+            const title = document.createElement('strong');
+            title.textContent = `Slot ${slot}`;
+            const summary = document.createElement('span');
+            let saved = null;
+            try {
+                saved = this.readSaveSlot(slot);
+            } catch (error) {
+                console.error(`Failed to read save slot ${slot}:`, error);
+            }
+
+            if (saved?.player) {
+                const playerClass = saved.player.className || 'Adventurer';
+                summary.textContent =
+                    `${saved.player.name || 'Unnamed hero'} · ${playerClass} · Level ${saved.player.level || 1}`;
+            } else if (saved) {
+                summary.textContent = 'Unreadable save data';
+            } else {
+                summary.textContent = 'Empty';
+            }
+            details.append(title, summary);
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = this.saveSlotMode === 'save' ? 'Save Here' : 'Load';
+            button.disabled = this.saveSlotMode === 'load' && !saved?.player;
+            button.addEventListener('click', () => {
+                if (this.saveSlotMode === 'save') {
+                    if (saved && !window.confirm(`Overwrite the saved game in Slot ${slot}?`)) return;
+                    if (this.saveGame(slot)) document.getElementById('save-slot-dialog').close();
+                } else if (this.loadGame(slot)) {
+                    document.getElementById('save-slot-dialog').close();
+                }
+            });
+            row.append(details, button);
+            list.append(row);
+        }
+    },
+
+    drawClassPreview(classId) {
+        const preview = document.getElementById('class-preview');
+        const ctx = preview.getContext('2d');
+        ctx.clearRect(0, 0, preview.width, preview.height);
+        SpriteRenderer.drawHeroAppearance(
+            { ctx, TILE_SIZE: preview.width },
+            classId,
+            0,
+            0
+        );
+    },
+
+    advanceCharacterCreation() {
+        if (this.characterCreationStep === 0) {
+            const nameInput = document.getElementById('hero-name');
+            if (!nameInput.value.trim()) {
+                nameInput.setCustomValidity('Enter a name for your hero.');
+                nameInput.reportValidity();
+                return;
+            }
+            nameInput.setCustomValidity('');
+        }
+        this.characterCreationStep = Math.min(2, this.characterCreationStep + 1);
+        this.renderCharacterCreationStep();
+    },
+
+    renderCharacterCreationStep() {
+        const steps = [
+            document.getElementById('character-step-identity'),
+            document.getElementById('character-step-class'),
+            document.getElementById('character-step-review')
+        ];
+        const stepNames = ['Identity', 'Class', 'Review'];
+        steps.forEach((step, index) => {
+            step.hidden = index !== this.characterCreationStep;
+        });
+        document.getElementById('creation-progress').textContent =
+            `Step ${this.characterCreationStep + 1} of ${steps.length}: ${stepNames[this.characterCreationStep]}`;
+        document.getElementById('character-back').hidden = this.characterCreationStep === 0;
+        document.getElementById('character-next').hidden = this.characterCreationStep === steps.length - 1;
+        document.getElementById('character-submit').hidden = this.characterCreationStep !== steps.length - 1;
+        this.updateClassDescription();
+        if (this.characterCreationStep === 0) {
+            document.getElementById('hero-name').focus();
+        } else if (this.characterCreationStep === 1) {
+            document.querySelector('input[name="hero-class"]:checked').focus();
+        } else {
+            document.getElementById('character-step-review').focus();
+        }
+    },
+
+    startAdventure(name, classId) {
+        if (!Entities.PlayerClasses[classId]) {
+            Utils.showMessage('Choose a valid hero class before starting.', 'error');
+            return;
+        }
+        if (!name) {
+            this.characterCreationStep = 0;
+            this.renderCharacterCreationStep();
+            document.getElementById('hero-name').setCustomValidity('Enter a name for your hero.');
+            document.getElementById('hero-name').reportValidity();
+            return;
+        }
+        this.player = new Entities.Player(name, classId);
+        this.currentSaveSlot = null;
+        QuestSystem.init(this.player);
+        this.player.updateStatsDisplay();
+        this.updateSpellDisplay();
+        this.updateCamera();
+        window.updateInventoryDisplay();
+        this.render();
+        document.getElementById('character-creation').close();
+    },
+
     updateSpellDisplay() {
         const select = document.getElementById('spell-select');
+        const castButton = document.getElementById('cast-spell-btn');
         const selectedSpell = select.value;
-        select.innerHTML = Object.entries(Entities.Spells).map(([id, spell]) =>
+        const availableSpells = Object.entries(Entities.Spells).filter(([id]) =>
+            this.player.canCastSpell(id)
+        );
+        select.innerHTML = availableSpells.map(([id, spell]) =>
             `<option value="${id}">${spell.name} (${spell.manaCost} MP)</option>`
         ).join('');
-        if (Entities.Spells[selectedSpell]) select.value = selectedSpell;
+        if (availableSpells.some(([id]) => id === selectedSpell)) select.value = selectedSpell;
 
         const spell = Entities.Spells[select.value];
-        document.getElementById('spell-description').textContent = spell
-            ? `${spell.description} Cost: ${spell.manaCost} MP${spell.range ? ` · Range: ${spell.range} tiles` : ''}`
-            : '';
+        select.disabled = availableSpells.length === 0;
+        castButton.disabled = availableSpells.length === 0;
+        const description = availableSpells.length === 0
+            ? `${this.player.className} cannot cast spells.`
+            : spell
+                ? `${spell.description} Cost: ${spell.manaCost} MP${spell.range ? ` · Range: ${spell.range} tiles` : ''}`
+                : '';
+        document.getElementById('spell-description').textContent = description;
     },
 
     serializeTerrain() {
@@ -1725,7 +1981,15 @@ const Game = {
     },
 
     // Save game to localStorage
-    saveGame() {
+    saveGame(slot) {
+        if (slot === undefined) {
+            this.openSaveSlotPicker('save');
+            return false;
+        }
+        if (!Number.isInteger(slot) || slot < 1 || slot > 3) {
+            Utils.showMessage('Choose a valid save slot.', 'error');
+            return false;
+        }
         const gameState = {
             player: this.player,
             monsters: this.monsters,
@@ -1741,31 +2005,46 @@ const Game = {
             cameraY: this.cameraY
         };
         
-        const saved = Utils.setLocalStorage('rpg_save', gameState);
+        const saved = Utils.setLocalStorage(this.saveSlotKey(slot), gameState);
         Utils.showMessage(
             saved
-                ? 'Game saved successfully!'
+                ? `Game saved to Slot ${slot}!`
                 : 'Unable to save game. Browser storage may be disabled or full.',
             saved ? 'success' : 'error'
         );
+        if (saved) {
+            this.currentSaveSlot = slot;
+            this.updateStartupAvailability();
+            this.renderSaveSlots();
+        }
         return saved;
     },
 
     // Load game from localStorage
-    loadGame() {
+    loadGame(slot) {
+        if (slot === undefined) {
+            this.openSaveSlotPicker('load');
+            return false;
+        }
+        if (!Number.isInteger(slot) || slot < 1 || slot > 3) {
+            Utils.showMessage('Choose a valid save slot.', 'error');
+            return false;
+        }
         let saved;
         try {
-            saved = Utils.getLocalStorage('rpg_save', null);
+            saved = this.readSaveSlot(slot);
         } catch (error) {
-            console.error('Failed to load saved game:', error);
+            console.error(`Failed to load save slot ${slot}:`, error);
             Utils.showMessage('Unable to load saved game. Browser storage may be unavailable or the save data is invalid.', 'error');
-            return;
+            return false;
         }
         
-        if (!saved) {
-            Utils.showMessage('No save game found!', 'error');
-            return;
+        if (!saved?.player) {
+            Utils.showMessage(`No valid save game found in Slot ${slot}.`, 'error');
+            this.updateStartupAvailability();
+            return false;
         }
+        this.currentSaveSlot = slot;
         
         this.width = saved.width || 50;
         this.height = saved.height || 30;
@@ -1778,6 +2057,11 @@ const Game = {
             Object.create(Entities.Player.prototype),
             saved.player,
             {
+                classId: saved.player.classId || null,
+                className: saved.player.className || 'Adventurer',
+                allowedSpells: saved.player.classId
+                    ? [...(Entities.PlayerClasses[saved.player.classId]?.spells || [])]
+                    : Object.keys(Entities.Spells),
                 equipment: {
                     weapon: saved.player.equipment?.weapon || null,
                     armor: saved.player.equipment?.armor || null,
@@ -1785,6 +2069,12 @@ const Game = {
                 }
             }
         );
+        const playerClass = Entities.PlayerClasses[this.player.classId];
+        if (playerClass) {
+            this.player.maxMp = playerClass.maxMp +
+                (this.player.allowedSpells.length > 0 ? Math.max(0, this.player.level - 1) * 10 : 0);
+            this.player.mp = this.player.mp;
+        }
         this.monsters = saved.monsters;
         this.items = saved.items;
         this.npcs = saved.npcs;
@@ -1819,6 +2109,8 @@ const Game = {
         this.updateGoldDisplay();
         this.render();
         Utils.showMessage('Game loaded successfully!', 'success');
+        this.saveSlotReturnToStartup = false;
+        return true;
     },
 
     // Game over
@@ -1826,8 +2118,9 @@ const Game = {
         this.gameState = 'gameover';
         Utils.showMessage(`Game Over! You reached level ${this.player.level}.`, 'error');
         
-        // Auto-save on death
-        this.saveGame();
+        // Preserve the loaded slot; new adventures can choose a slot when they die.
+        if (this.currentSaveSlot) this.saveGame(this.currentSaveSlot);
+        else this.openSaveSlotPicker('save');
     }
 };
 

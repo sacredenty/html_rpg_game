@@ -62,6 +62,274 @@ h1 {
     accent-color: #a78bfa;
 }
 
+dialog#character-creation,
+dialog#startup-menu,
+dialog#save-slot-dialog {
+    width: min(440px, calc(100% - 32px));
+    margin: auto;
+    padding: 0;
+    border: 1px solid #b78b52;
+    border-radius: 10px;
+    background: #1f2937;
+    color: #eee;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.65);
+}
+
+dialog#character-creation::backdrop,
+dialog#startup-menu::backdrop,
+dialog#save-slot-dialog::backdrop {
+    background: rgba(10, 15, 28, 0.82);
+}
+
+.startup-content {
+    display: grid;
+    gap: 16px;
+    padding: 24px;
+    background: transparent;
+    box-shadow: none;
+}
+
+.startup-content h2 {
+    color: #fbbf24;
+}
+
+.startup-content p {
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+.startup-actions {
+    display: grid;
+    gap: 10px;
+}
+
+.startup-actions button {
+    padding: 12px;
+    border: 1px solid #fbbf24;
+    border-radius: 5px;
+    background: #854d0e;
+    color: #fef3c7;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.startup-actions button:hover:not(:disabled) {
+    background: #a16207;
+}
+
+.startup-actions button:disabled {
+    border-color: #475569;
+    background: #374151;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.save-slot-content {
+    display: grid;
+    gap: 14px;
+    padding: 24px;
+    background: transparent;
+    box-shadow: none;
+}
+
+.save-slot-content h2 {
+    color: #fbbf24;
+}
+
+.save-slot-content p {
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+.save-slot-list {
+    display: grid;
+    gap: 10px;
+}
+
+.save-slot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #475569;
+    border-radius: 5px;
+    background: #111827;
+}
+
+.save-slot-details {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.save-slot-details strong {
+    color: #fbbf24;
+}
+
+.save-slot-details span {
+    overflow-wrap: anywhere;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+.save-slot button,
+#close-save-slots {
+    padding: 9px 12px;
+    border: 1px solid #fbbf24;
+    border-radius: 5px;
+    background: #854d0e;
+    color: #fef3c7;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.save-slot button:disabled {
+    border-color: #475569;
+    background: #374151;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+#character-creation-form {
+    display: grid;
+    gap: 12px;
+    padding: 24px;
+}
+
+#character-creation-form [hidden] {
+    display: none;
+}
+
+.character-step {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+#character-creation-form h2 {
+    color: #fbbf24;
+}
+
+#creation-progress {
+    color: #fbbf24 !important;
+    font-weight: bold;
+}
+
+#character-creation-form p {
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+#character-creation-form label {
+    margin-bottom: -8px;
+    font-weight: bold;
+}
+
+#character-creation-form input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #64748b;
+    border-radius: 5px;
+    background: #111827;
+    color: #eee;
+    font: inherit;
+}
+
+#hero-class-options {
+    display: grid;
+    gap: 8px;
+    border: 0;
+}
+
+#class-preview {
+    display: block;
+    justify-self: center;
+    width: 80px;
+    height: 80px;
+    border: 1px solid #475569;
+    border-radius: 5px;
+    background: #111827;
+    image-rendering: pixelated;
+}
+
+#hero-class-options legend {
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.class-choice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 !important;
+    padding: 10px;
+    border: 1px solid #475569;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.class-choice:has(input:checked) {
+    border-color: #fbbf24;
+    background: #374151;
+}
+
+.class-choice input {
+    accent-color: #fbbf24;
+}
+
+.class-choice span {
+    display: grid;
+    gap: 3px;
+}
+
+.class-choice small {
+    color: #cbd5e1;
+}
+
+.character-review {
+    display: grid;
+    gap: 10px;
+}
+
+.character-review div {
+    display: grid;
+    gap: 3px;
+}
+
+.character-review dt {
+    color: #fbbf24;
+    font-weight: bold;
+}
+
+.character-review dd {
+    color: #cbd5e1;
+}
+
+.character-navigation {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#character-creation-form button {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #fbbf24;
+    border-radius: 5px;
+    background: #854d0e;
+    color: #fef3c7;
+    font: inherit;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#character-creation-form button:hover {
+    background: #a16207;
+}
+
 #game-area {
     flex: 1;
     min-width: 0;

@@ -19,7 +19,7 @@
 
 ### Health & Mana
 - **HP Pool**: 100 base, +20 per level
-- **MP Pool**: 50 base, +10 per level; spells consume MP
+- **MP Pool**: Mages start with 90 MP and Rangers with 25 MP; both gain 10 MP per level. Warriors have no MP. Spells consume MP.
 - **XP Requirements**: Scale by 1.5x each level; unused XP carries over, including across multiple levels earned at once
 - **XP Display**: Header progress bar shows current XP toward the next level
 
@@ -59,9 +59,10 @@
 - Victory/defeat messages displayed
 
 ### Spellcasting
-- **Arcane Bolt**: 8 MP; magic-based damage to an enemy within 6 tiles
-- **Flame Burst**: 16 MP; stronger magic-based damage to an enemy within 4 tiles
-- **Healing Light**: 12 MP; restores HP based on the Magic stat
+- **Arcane Bolt**: 8 MP; Mage spell that deals magic-based damage to an enemy within 6 tiles
+- **Flame Burst**: 16 MP; Mage spell that deals stronger magic-based damage to an enemy within 4 tiles
+- **Healing Light**: 12 MP; Mage and Ranger spell that restores HP based on the Magic stat
+- **Class restrictions**: Mages can cast all spells, Rangers can cast Healing Light, and Warriors cannot cast spells.
 - Damage spells automatically target the nearest enemy in range; surviving targets may retaliate
 - Mana potions restore MP for further casting
 
@@ -205,7 +206,7 @@ Older saves containing a full `map` grid are still supported.
 
 ### Save Locations
 - Stored in browser localStorage
-- Key: `rpg_save`
+- Keys: `rpg_save_slot_1`, `rpg_save_slot_2`, and `rpg_save_slot_3` (legacy `rpg_save` is read as Slot 1)
 - Persists across browser sessions
 
 ### Load Features
@@ -229,8 +230,8 @@ Older saves containing a full `map` grid are still supported.
 - **Attack**: Target nearby enemies
 - **Rest**: Heal 15-25 HP
 - **Talk / Trade**: Speak to nearby NPCs, accept quests from the King, and open the Merchant shop
-- **Save Game**: Manual save
-- **Load Game**: Load previous save
+- **Save Game**: Choose one of three slots; confirm before overwriting a saved slot
+- **Load Game**: Choose a saved slot to restore
 
 ### Sidebar Panels
 1. **Stats Panel**: Current attributes with progress bars

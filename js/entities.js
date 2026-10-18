@@ -1,27 +1,52 @@
 // Game Entities - Player, Monsters, Items, etc.
 
 const Entities = {
+    PlayerClasses: {
+        warrior: {
+            name: 'Warrior',
+            description: 'A stalwart fighter with high strength and endurance. Warriors do not use magic.',
+            stats: { strength: 14, magic: 6, endurance: 14, agility: 8 },
+            maxHp: 130,
+            maxMp: 0,
+            spells: []
+        },
+        mage: {
+            name: 'Mage',
+            description: 'A gifted spellcaster with powerful magic and a deep reserve of mana, but less health. Mages can learn every spell.',
+            stats: { strength: 6, magic: 15, endurance: 8, agility: 10 },
+            maxHp: 85,
+            maxMp: 90,
+            spells: ['arcaneBolt', 'flameBurst', 'healingLight']
+        },
+        ranger: {
+            name: 'Ranger',
+            description: 'A versatile explorer with balanced strength and magic, plus the highest agility. Rangers can cast Healing Light.',
+            stats: { strength: 11, magic: 8, endurance: 10, agility: 14 },
+            maxHp: 105,
+            maxMp: 25,
+            spells: ['healingLight']
+        }
+    },
 
     // Player Class
     Player: class {
-        constructor(name) {
+        constructor(name, classId = 'warrior') {
+            const playerClass = Entities.PlayerClasses[classId] || Entities.PlayerClasses.warrior;
             this.name = name || 'Hero';
+            this.classId = Entities.PlayerClasses[classId] ? classId : 'warrior';
+            this.className = playerClass.name;
+            this.allowedSpells = [...playerClass.spells];
             this.x = 10;
             this.y = 10;
             
             // Base stats (can be increased with equipment/skills)
-            this.stats = {
-                strength: 10,
-                magic: 10,
-                endurance: 10,
-                agility: 10
-            };
+            this.stats = { ...playerClass.stats };
 
             // Health and Mana
-            this.maxHp = 100;
-            this.hp = 100;
-            this.maxMp = 50;
-            this.mp = 50;
+            this.maxHp = playerClass.maxHp;
+            this.hp = this.maxHp;
+            this.maxMp = playerClass.maxMp;
+            this.mp = this.maxMp;
 
             // Level and experience
             this.level = 1;
@@ -71,6 +96,12 @@ const Entities = {
             );
         }
 
+        canCastSpell(spellId) {
+            if (!this.classId) return true;
+            const playerClass = Entities.PlayerClasses[this.classId];
+            return Boolean(playerClass?.spells.includes(spellId));
+        }
+
         gainXp(amount) {
             this.xp += amount;
             let levelsGained = 0;
@@ -99,7 +130,7 @@ const Entities = {
 
             // Increase max HP and MP
             this.maxHp += 20;
-            this.maxMp += 10;
+            if (this.allowedSpells.length > 0) this.maxMp += 10;
 
             // Restore the expanded health and mana pools on level up
             this.hp = this.maxHp;
@@ -128,6 +159,8 @@ const Entities = {
         updateStatsDisplay() {
             const s = this.stats;
             const strength = s.strength + this.getEquipmentBonus('strength');
+            document.getElementById('player-name').textContent =
+                `${this.name} · ${this.className || 'Adventurer'}`;
             document.getElementById('level-display').textContent = this.level;
             document.getElementById('hp-display').textContent = `${this.hp}/${this.maxHp}`;
             document.getElementById('mp-display').textContent = `${this.mp}/${this.maxMp}`;
