@@ -1849,8 +1849,12 @@ const Game = {
 
             if (saved?.player) {
                 const playerClass = saved.player.className || 'Adventurer';
+                const savedLevel = saved.player.level ?? saved.player._level;
+                const level = Number.isFinite(Number(savedLevel)) && Number(savedLevel) > 0
+                    ? Number(savedLevel)
+                    : 1;
                 summary.textContent =
-                    `${saved.player.name || 'Unnamed hero'} · ${playerClass} · Level ${saved.player.level || 1}`;
+                    `${saved.player.name || 'Unnamed hero'} · ${playerClass} · Level ${level}`;
             } else if (saved) {
                 summary.textContent = 'Unreadable save data';
             } else {
@@ -1991,7 +1995,10 @@ const Game = {
             return false;
         }
         const gameState = {
-            player: this.player,
+            player: {
+                ...this.player,
+                level: this.player.level
+            },
             monsters: this.monsters,
             items: this.items,
             npcs: this.npcs,
