@@ -188,20 +188,7 @@ const Entities = {
             xpBar.value = this.xp;
         }
 
-        addQuest(quest) {
-            this.quests[quest.id] = quest;
-            QuestSystem.renderQuests();
-        }
-
-        completeQuest(questId) {
-            if (this.quests[questId]) {
-                this.quests[questId].completed = true;
-                const levelsGained = this.gainXp(50);
-                const levelMessage = levelsGained > 0 ? ` Level up! You reached level ${this.level}.` : '';
-                Utils.showMessage(`Quest completed! +50 XP.${levelMessage}`, 'success');
-                QuestSystem.renderQuests();
-            }
-        }
+        // Legacy methods kept for compatibility - new quest system handles this
 
         checkFlags(flag, value) {
             const current = this[`has${flag}`];

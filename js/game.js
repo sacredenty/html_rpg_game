@@ -778,7 +778,20 @@ const Game = {
                 item.alive = false;
                 GameAudio.pickup();
                 this.player.addInventoryItem(item);
-                QuestSystem.recordCollection(this.player, item.type);
+                
+                // Find and complete collection quest using helper method
+                const collectQuests = QuestSystem.getCollectQuestsByTarget(item.type);
+                if (collectQuests.length > 0) {
+                    // Complete the first active quest for this target type
+                    const quest = collectQuests[0];
+                    // Add progress to the quest
+                    QuestSystem.completeObjective(quest.id, {
+                        type: 'collect',
+                        target: item.type,
+                        quantity: 1
+                    });
+                }
+                
                 Utils.showMessage(`Picked up: ${item.name}!`, 'success');
                 this.render();
                 return;
@@ -1621,6 +1634,28 @@ const Game = {
         document.getElementById('move-south').addEventListener('click', () => this.moveSouth());
         document.getElementById('move-west').addEventListener('click', () => this.moveWest());
         document.getElementById('move-east').addEventListener('click', () => this.moveEast());
+
+        // Keyboard arrow key bindings for directional movement
+        document.addEventListener('keydown', event => {
+            switch (event.key) {
+                case 'ArrowUp':
+                    event.preventDefault();
+                    this.moveNorth();
+                    break;
+                case 'ArrowDown':
+                    event.preventDefault();
+                    this.moveSouth();
+                    break;
+                case 'ArrowLeft':
+                    event.preventDefault();
+                    this.moveWest();
+                    break;
+                case 'ArrowRight':
+                    event.preventDefault();
+                    this.moveEast();
+                    break;
+            }
+        });
 
         // Explore button (random movement)
         document.getElementById('explore-btn').addEventListener('click', () => this.explore());

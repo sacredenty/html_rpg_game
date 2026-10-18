@@ -80,8 +80,20 @@ const GameCombat = {
             const goldGained = Utils.random(monster.gold - 2, monster.gold + 3);
             this.addGold(goldGained);
             const levelMessage = levelsGained > 0 ? ` Level up! You reached level ${this.player.level}.` : '';
+            
+            // Check for kill quests using helper method
+            const killQuests = QuestSystem.getKillQuestsByTarget(monster.type);
+            if (killQuests.length > 0) {
+                // Complete the first active quest for this target type
+                const quest = killQuests[0];
+                QuestSystem.completeObjective(quest.id, {
+                    type: 'kill',
+                    target: monster.type,
+                    quantity: 1
+                });
+            }
+            
             Utils.showMessage(`Defeated ${monster.name}! Gained ${monster.xp} XP and ${goldGained} gold.${levelMessage}`, 'success');
-            QuestSystem.checkQuestCompletion(this.player, monster.type);
             GameAudio.victory();
             this.removeEntity(monster);
             this.updateEnemyHealthBar();
