@@ -41,7 +41,7 @@ test.describe('Quest System Tests - Simple', () => {
             await page.waitForTimeout(2000);
             
             // Check that quest names are visible with dark text
-            const questContent = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#interaction-content');
+            const questContent = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#active-quests-container');
             if (await questContent.count() > 0) {
                 const questElements = await questContent.locator('strong, div').all();
                 
@@ -54,7 +54,7 @@ test.describe('Quest System Tests - Simple', () => {
             }
         } else {
             // If no talk button found, check for any quest-related content
-            const anyQuest = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#interaction-content');
+            const anyQuest = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#active-quests-container');
             if (await anyQuest.count() > 0) {
                 await expect(anyQuest).toBeVisible();
             }
@@ -68,7 +68,7 @@ test.describe('Quest System Tests - Simple', () => {
             await page.waitForTimeout(2000);
             
             // Check for any strong/text elements in quest board
-            const questNames = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#interaction-content strong');
+            const questNames = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#active-quests-container strong');
             const count = await questNames.count();
             
             if (count > 0) {
@@ -88,7 +88,7 @@ test.describe('Quest System Tests - Simple', () => {
             await page.waitForTimeout(2000);
             
             // Check that reward information exists in the content - look for quest progress indicators
-            const content = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#interaction-content');
+            const content = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#active-quests-container');
             if (await content.count() > 0) {
                 const text = await content.textContent();
                 // Quests show progress like "Progress: X/Y" which indicates rewards/XP are available
@@ -109,7 +109,7 @@ test.describe('Quest System Tests - Simple', () => {
             await talkButton.click();
             await page.waitForTimeout(1500);
             
-            const questContainer = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#interaction-content');
+            const questContainer = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#active-quests-container');
             if (await questContainer.count() > 0) {
                 await expect(questContainer).toBeVisible();
             }
@@ -125,7 +125,7 @@ test.describe('Quest System Tests - Simple', () => {
             await page.waitForTimeout(2000);
             
             // Verify the content is not empty
-            const content = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#interaction-content');
+            const content = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#active-quests-container');
             if (await content.count() > 0) {
                 const text = await content.textContent();
                 

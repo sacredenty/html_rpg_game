@@ -396,14 +396,14 @@ const QuestSystem = {
 
     // Render quest board
     renderQuestBoard(player = Game.player) {
-        const container = document.getElementById('interaction-content');
+        const container = document.getElementById('active-quests-container');
         if (!container) return;
 
-        const available = this.getAvailableQuests();
         const active = this.activeQuests.filter(quest => 
             quest.state && quest.state.accepted && !quest.state.completed
         );
         const completed = this.completedQuests;
+        const available = this.getAvailableQuests();
 
         let activeHtml = '';
         if (active.length) {
@@ -425,11 +425,13 @@ const QuestSystem = {
                     </div>
                 `).join('')
             ;
+        } else {
+            activeHtml = '<p style="color: #6b7280;">No active quests.</p>';
         }
 
         let completedHtml = '';
         if (completed.length) {
-            completedHtml = '<h4 style="margin: 10px 0;">Completed</h4>' +
+            completedHtml = '<h4 style="margin: 10px 0; color: #059669;">Completed</h4>' +
                 completed.map(quest => `
                     <div style="background: #d1fae5; padding: 8px; margin: 5px 0; border-radius: 4px;">
                         <strong style="color: #065f46;">${quest.name} ✓</strong><br>
@@ -437,11 +439,13 @@ const QuestSystem = {
                     </div>
                 `).join('')
             ;
+        } else {
+            completedHtml = '<p style="color: #6b7280;">No completed quests.</p>';
         }
 
         let availableHtml = '';
         if (available.length) {
-            availableHtml = '<h4 style="margin: 10px 0;">Available Quests</h4>' + 
+            availableHtml = '<h4 style="margin: 10px 0; color: #059669;">Available Quests</h4>' + 
                 available.map(quest => `
                     <div class="shop-item" style="background: #f9fafb; padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 4px solid ${this.getQuestColor(quest.category)};">
                         <div style="display: flex; justify-content: space-between; align-items: start;">
