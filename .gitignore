@@ -4,3 +4,5 @@ node_modules/
 Thumbs.db
 .vscode/extensions.json
 .rpg_save*
+playwright-report/
+test-results/
