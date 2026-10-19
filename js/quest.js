@@ -231,17 +231,23 @@ const QuestSystem = {
         }
     },
 
-    // Check for prerequisites and unlock quests
+    // Check for prerequisites and unlock quests (only if not already accepted)
     checkPrerequisites() {
         this.activeQuests.forEach(quest => {
-            if (quest.state && quest.state.accepted) return;
+            // Don't accept quests that are already accepted, completed, or dropped
+            if (quest.state && (quest.state.accepted || quest.state.completed || quest.state.dropped)) {
+                return;
+            }
 
             const prerequisites = quest.prerequisites || [];
-            const allCompleted = prerequisites.every(reqId => 
-                this.completedQuests.some(q => q.id === reqId)
-            );
-
-            if (allCompleted) {
+            
+            // Only auto-accept main storyline quests with non-empty prerequisites when they're completed
+            // Side quests and the first main quest should require manual acceptance
+            if (quest.category === 'main' && 
+                prerequisites.length > 0 && 
+                prerequisites.every(reqId => 
+                    this.completedQuests.some(q => q.id === reqId)
+                )) {
                 quest.state.accepted = true;
                 quest.state.progress = 0;
                 quest.state.objectivesCompleted = [];

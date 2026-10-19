@@ -2046,6 +2046,10 @@ const Game = {
             cameraX: this.cameraX,
             cameraY: this.cameraY
         };
+
+        // Quest data is saved separately by QuestSystem to 'rpg_save' slot.
+        // We don't include it here because QuestSystem handles its own persistence.
+        // When loading, QuestSystem.init() reads from 'rpg_save' directly.
         
         const saved = Utils.setLocalStorage(this.saveSlotKey(slot), gameState);
         Utils.showMessage(
