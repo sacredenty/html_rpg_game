@@ -66,125 +66,43 @@ test.describe('Game UI Tests - Simple', () => {
     });
 });
 
-test.describe('Quest UI Tests - Simple', () => {
+test.describe('Quest UI Tests', () => {
     test.beforeEach(async ({ page }) => {
+        await page.addInitScript(() => localStorage.clear());
         await page.goto('file:///home/chris/code/html_rpg_game/index.html');
-        
-        // Wait for game to load and handle startup menu / character creation
-        await page.waitForTimeout(2000);
-        
-        // Click through any open dialogs - first click the new adventure button
-        const newAdventureBtn = page.locator('#new-adventure');
-        if (await newAdventureBtn.count() > 0) {
-            await newAdventureBtn.click();
-            await page.waitForTimeout(500);
-            
-            // Fill in character name and continue through creation
-            const createCharDialog = page.locator('#character-creation');
-            if (await createCharDialog.count() > 0) {
-                await page.click('#hero-name');
-                await page.fill('#hero-name', 'TestHero');
-                await page.click('#character-next');
-                await page.waitForTimeout(200);
-                await page.click('#character-next');
-                await page.waitForTimeout(200);
-                await page.click('#character-submit');
-            }
-        } else {
-            // Game already initialized, wait a bit more for game to settle
-            await page.waitForTimeout(1000);
-        }
+        await page.locator('#new-adventure').click();
+        await page.locator('#hero-name').fill('TestHero');
+        await page.locator('#character-next').click();
+        await page.locator('#character-next').click();
+        await page.locator('#character-submit').click();
+        await expect(page.locator('#character-creation')).toBeHidden();
     });
 
-    test('Quest container should exist', async ({ page }) => {
-        const talkBtn = page.locator('#interact-btn');
-        if (await talkBtn.count() > 0) {
-            await talkBtn.click();
-            await page.waitForTimeout(1500);
-            
-            // Use section filter to get the correct interaction-content element
-            const questsContainer = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#interaction-content');
-            if (await questsContainer.count() > 0) {
-                await expect(questsContainer).toBeVisible();
-            }
-        }
+    test('Quest Log is visible without showing available quests', async ({ page }) => {
+        await expect(page.locator('#accepted-quests-container')).toBeVisible();
+        await expect(page.locator('#accepted-quests-container')).toContainText('No active quests');
+        await expect(page.locator('#accepted-quests-container')).not.toContainText('Available Quests');
+        await expect(page.locator('#interaction-panel')).toBeHidden();
     });
 
-    test('Interaction panel should be accessible', async ({ page }) => {
-        const talkBtn = page.locator('#interact-btn');
-        if (await talkBtn.count() > 0) {
-            await talkBtn.click();
-            await page.waitForTimeout(1500);
-            
-            // Use section filter to get the correct interaction-content element
-            const content = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#interaction-content');
-            if (await content.count() > 0) {
-                // Content should have some visible elements
-                const divs = await content.locator('div, p').all();
-                expect(divs.length).toBeGreaterThan(0);
-            }
-        }
-    });
+    test('quest giver click opens the available quests widget', async ({ page }) => {
+        const position = await page.evaluate(() => {
+            const king = Game.npcs.find(npc => npc.type === 'king' && npc.alive);
+            if (!king) throw new Error('No living quest giver found');
+            Game.player.x = king.x;
+            Game.player.y = king.y;
+            Game.updateCamera();
+            Game.render();
+            const bounds = Game.canvas.getBoundingClientRect();
+            return {
+                x: (king.x - Game.cameraX + 0.5) * bounds.width / Game.viewWidth,
+                y: (king.y - Game.cameraY + 0.5) * bounds.height / Game.viewHeight
+            };
+        });
+        await page.locator('#gameCanvas').click({ position });
 
-    test('Quest board headers should be readable', async ({ page }) => {
-        const talkBtn = page.locator('#interact-btn');
-        if (await talkBtn.count() > 0) {
-            await talkBtn.click();
-            await page.waitForTimeout(2000);
-            
-            // Use section filter to get the correct interaction-content element
-            const content = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#active-quests-container');
-            if (await content.count() > 0) {
-                const text = await content.textContent();
-                
-                // Content should have headers - relax the check to be more lenient
-                expect(text.toLowerCase()).toMatch(/in progress|completed|available/i);
-            } else {
-                test.skip('Quest Log section not found, skipping header check', () => {});
-            }
-        } else {
-            test.skip('Talk button not found, skipping header check', () => {});
-        }
-    });
-
-    test('Quest board should not be empty', async ({ page }) => {
-        const talkBtn = page.locator('#interact-btn');
-        if (await talkBtn.count() > 0) {
-            await talkBtn.click();
-            await page.waitForTimeout(2000);
-            
-            // Use section filter to get the correct interaction-content element
-            const content = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#active-quests-container');
-            if (await content.count() > 0) {
-                const text = await content.textContent();
-                
-                // Should have some quest-related text
-                expect(text.trim().length).toBeGreaterThan(10);
-            } else {
-                test.skip('Quest Log section not found, skipping emptiness check', () => {});
-            }
-        } else {
-            test.skip('Talk button not found, skipping emptiness check', () => {});
-        }
-    });
-
-    test('Quest names should be present in DOM', async ({ page }) => {
-        const talkBtn = page.locator('#interact-btn');
-        if (await talkBtn.count() > 0) {
-            await talkBtn.click();
-            await page.waitForTimeout(2000);
-            
-            // Use section filter to get the correct interaction-content element
-            const content = page.locator('section').filter({ hasText: 'Quest Log' }).locator('#active-quests-container');
-            if (await content.count() > 0) {
-                const strongElements = await content.locator('strong').all();
-                
-                expect(strongElements.length).toBeGreaterThanOrEqual(0);
-            } else {
-                test.skip('Quest Log section not found, skipping quest name check', () => {});
-            }
-        } else {
-            test.skip('Talk button not found, skipping quest name check', () => {});
-        }
+        await expect(page.locator('#interaction-panel')).toBeVisible();
+        await expect(page.locator('#interaction-content')).toContainText('Available Quests');
+        await expect(page.locator('#interaction-content .quest-accept-btn').first()).toBeVisible();
     });
 });

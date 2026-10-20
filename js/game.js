@@ -1026,7 +1026,7 @@ const Game = {
             this.updateTradeDisplay();
         } else if (npc.type === 'king') {
             panel.dataset.type = 'quests';
-            QuestSystem.renderQuestBoard(this.player);
+            QuestSystem.renderQuestBoard(this.player, true);
         } else {
             panel.dataset.type = 'villager';
             content.textContent = npc.dialogue;
@@ -1979,7 +1979,7 @@ const Game = {
         }
         this.player = new Entities.Player(name, classId);
         this.currentSaveSlot = null;
-        QuestSystem.init(this.player);
+        QuestSystem.init(this.player, null);
         this.player.updateStatsDisplay();
         this.updateSpellDisplay();
         this.updateCamera();
@@ -2044,12 +2044,9 @@ const Game = {
             viewWidth: this.viewWidth,
             viewHeight: this.viewHeight,
             cameraX: this.cameraX,
-            cameraY: this.cameraY
+            cameraY: this.cameraY,
+            questData: QuestSystem.serialize()
         };
-
-        // Quest data is saved separately by QuestSystem to 'rpg_save' slot.
-        // We don't include it here because QuestSystem handles its own persistence.
-        // When loading, QuestSystem.init() reads from 'rpg_save' directly.
         
         const saved = Utils.setLocalStorage(this.saveSlotKey(slot), gameState);
         Utils.showMessage(
@@ -2147,7 +2144,8 @@ const Game = {
         }
         this.updateCamera();
         
-        QuestSystem.init(this.player);
+        const questData = saved.questData || (saved.quests ? saved : QuestSystem.getLegacySavedQuestData());
+        QuestSystem.init(this.player, questData);
         document.getElementById('interaction-panel').hidden = true;
         this.player.updateStatsDisplay();
         this.updateSpellDisplay();

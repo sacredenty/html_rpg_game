@@ -90,10 +90,9 @@ Optional quests that provide additional rewards and content:
 - **Side quests** are marked with purple borders and a sparkle icon (✨)
 
 ### UI Panels
-The quest board displays three sections:
-1. **In Progress** - Currently active quests showing progress
-2. **Completed** - Finished quests with rewards claimed
-3. **Available** - Quests you can accept (with Accept buttons)
+- The **Quest Log** shows **In Progress** and **Completed** quests.
+- The **Available Quests** widget only appears in the interaction panel after clicking King Alaric.
+- Accepted quests appear immediately in the Quest Log and can be dropped there until completed.
 
 ### Prerequisite System
 - Main storyline quests unlock automatically after completing prerequisites
@@ -105,10 +104,13 @@ The quest board displays three sections:
 ## How It Works
 
 ### Accepting a Quest
-1. Visit the **Talk / Trade** NPC panel (near King Alaric or Merchant)
-2. Browse available quests in the "Available Quests" section
+1. Click King Alaric in the game world
+2. Browse available quests in the interaction panel
 3. Click **"Accept"** on any quest you want to take
-4. The quest moves to "In Progress"
+4. The quest appears in the Quest Log's **In Progress** section
+
+### Dropping a Quest
+Click **"Drop Quest"** on an active quest in the Quest Log. It is removed from the accepted list and becomes available from King Alaric again. Completed quests cannot be dropped.
 
 ### Completing Objectives
 - **Kill objectives:** Defeat the specified number of monsters
@@ -140,19 +142,20 @@ Upon quest completion:
 
 | Function | Description |
 |----------|-------------|
-| `init(player)` | Initialize quests on game start/load |
+| `init(player, savedQuestData)` | Initialize quests from a selected save slot or legacy quest data |
 | `acceptQuest(questId)` | Accept a new quest |
-| `completeObjective(questId, objective)` | Add progress toward quest goal |
-| `completeQuest(questId)` | Complete a finished quest (auto-called) |
+| `dropQuest(questId)` | Drop an active, incomplete quest |
+| `completeObjective(questId, objectiveType, target)` | Add progress toward a quest goal |
 | `getAvailableQuests()` | Get quests you can accept now |
-| `renderAllQuests()` | Refresh all quest UI panels |
+| `renderQuestBoard(player, showAvailable)` | Refresh the Quest Log and, at the quest giver, the available quest widget |
 
 ### Save System Integration
-Quest progress is automatically saved to localStorage:
+Quest state is saved with the selected save slot and restored when that slot is loaded:
 - Active quest states (accepted, progress, objectives completed)
+- Dropped quest states
 - Completed quests list
 - Kill counts and collection counts
-- Save data persists across game sessions
+- Legacy quest data is read when loading older saves
 
 ---
 

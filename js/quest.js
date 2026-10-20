@@ -143,60 +143,82 @@ const QuestSystem = {
     playerCollections: {},
 
     // Initialize quest system
-    init(player) {
-        const savedQuestData = this.getSavedQuestData();
-        
-        if (savedQuestData && savedQuestData.killCounts) {
-            this.playerKillCounts = { ...savedQuestData.killCounts };
-        }
-        if (savedQuestData && savedQuestData.collections) {
-            this.playerCollections = { ...savedQuestData.collections };
-        }
+    init(player, savedQuestData) {
+        const data = savedQuestData === undefined ? this.getSavedQuestData() : savedQuestData;
+        const completedQuestIds = new Set(data?.completedQuests || []);
+        this.playerKillCounts = { ...(data?.killCounts || {}) };
+        this.playerCollections = { ...(data?.collections || {}) };
 
-        this.activeQuests = [...this.mainStorylineQuests, ...this.sideQuests]
-            .map(quest => ({
-                ...quest,
-                state: savedQuestData && savedQuestData.quests[quest.id] 
-                    ? { ...savedQuestData.quests[quest.id], completed: false }
-                    : { accepted: false, progress: 0, objectivesCompleted: [], dropped: false }
-            }));
-
-        if (savedQuestData && savedQuestData.completedQuests) {
-            this.completedQuests = savedQuestData.completedQuests.map(qid => 
-                this.mainStorylineQuests.find(q => q.id === qid) || 
-                this.sideQuests.find(q => q.id === qid)
-            ).filter(Boolean);
-        }
+        this.activeQuests = [...this.mainStorylineQuests, ...this.sideQuests].map(quest => {
+            const savedState = data?.quests?.[quest.id];
+            const state = savedState
+                ? {
+                    ...savedState,
+                    completed: Boolean(savedState.completed || completedQuestIds.has(quest.id)),
+                    objectivesCompleted: Array.isArray(savedState.objectivesCompleted)
+                        ? [...savedState.objectivesCompleted]
+                        : []
+                }
+                : { accepted: false, progress: 0, objectivesCompleted: [], dropped: false, completed: false };
+            return { ...quest, state };
+        });
+        this.completedQuests = this.activeQuests.filter(quest => quest.state.completed);
 
         this.checkPrerequisites();
-        this.renderQuestBoard(player);
+        this.renderQuestBoard(player, false);
     },
 
     // Get saved quest data from localStorage
     getSavedQuestData() {
-        const saved = localStorage.getItem('rpg_save');
-        if (!saved) return null;
         try {
-            const data = JSON.parse(saved);
-            return data.quests || null;
-        } catch {
+            const storedQuestData = localStorage.getItem('rpg_quest_data');
+            if (storedQuestData) return JSON.parse(storedQuestData);
+            return this.getLegacySavedQuestData();
+        } catch (error) {
+            console.error('Failed to read saved quest data:', error);
+            return null;
+        }
+    },
+
+    getLegacySavedQuestData() {
+        const legacySave = localStorage.getItem('rpg_save');
+        if (!legacySave) return null;
+        try {
+            const data = JSON.parse(legacySave);
+            return data.questData || (data.quests ? data : null);
+        } catch (error) {
+            console.error('Failed to read legacy quest data:', error);
             return null;
         }
     },
 
     // Save quest progress to localStorage
     saveQuestData() {
-        const currentSave = localStorage.getItem('rpg_save');
-        let gameData;
-        
-        if (currentSave) {
-            try {
-                gameData = JSON.parse(currentSave);
-            } catch {
-                return;
+        const questData = this.serialize();
+        const slot = Game.currentSaveSlot;
+        const saveKey = Number.isInteger(slot) ? Game.saveSlotKey(slot) : null;
+        try {
+            if (saveKey) {
+                const currentSave = localStorage.getItem(saveKey);
+                if (currentSave) {
+                    const gameData = JSON.parse(currentSave);
+                    gameData.questData = questData;
+                    localStorage.setItem(saveKey, JSON.stringify(gameData));
+                } else {
+                    localStorage.setItem('rpg_quest_data', JSON.stringify(questData));
+                }
+            } else {
+                localStorage.setItem('rpg_quest_data', JSON.stringify(questData));
             }
+        } catch (error) {
+            console.error('Failed to save quest data:', error);
+            Utils.showMessage('Unable to save quest progress. Browser storage may be unavailable or full.', 'error');
+            return false;
         }
+        return true;
+    },
 
+    serialize() {
         const questData = {};
         this.activeQuests.forEach(quest => {
             if (quest.state) {
@@ -204,31 +226,20 @@ const QuestSystem = {
                     accepted: quest.state.accepted,
                     progress: quest.state.progress,
                     objectivesCompleted: quest.state.objectivesCompleted || [],
-                    dropped: quest.state.dropped
+                    dropped: quest.state.dropped,
+                    completed: quest.state.completed
                 };
             }
         });
 
-        const completedQuests = [];
-        this.activeQuests.forEach(quest => {
-            if (quest.state && quest.state.completed) {
-                completedQuests.push(quest.id);
-            }
-        });
-
-        if (gameData) {
-            gameData.quests = questData;
-            gameData.completedQuests = completedQuests;
-            localStorage.setItem('rpg_save', JSON.stringify(gameData));
-        } else {
-            const newSave = {
-                quests: questData,
-                completedQuests: completedQuests,
-                killCounts: this.playerKillCounts,
-                collections: this.playerCollections
-            };
-            localStorage.setItem('rpg_save', JSON.stringify(newSave));
-        }
+        return {
+            quests: questData,
+            completedQuests: this.activeQuests
+                .filter(quest => quest.state?.completed)
+                .map(quest => quest.id),
+            killCounts: { ...this.playerKillCounts },
+            collections: { ...this.playerCollections }
+        };
     },
 
     // Check for prerequisites and unlock quests (only if not already accepted)
@@ -258,7 +269,8 @@ const QuestSystem = {
     // Get quests that can be accepted
     getAvailableQuests() {
         return this.activeQuests.filter(quest => 
-            !quest.state.accepted && 
+            !quest.state.accepted &&
+            !quest.state.completed &&
             (!quest.prerequisites || quest.prerequisites.every(reqId => 
                 this.completedQuests.some(q => q.id === reqId)
             ))
@@ -268,18 +280,15 @@ const QuestSystem = {
     // Accept a quest
     acceptQuest(questId) {
         const quest = this.activeQuests.find(q => q.id === questId);
-        if (!quest || !quest.state) return false;
+        if (!quest || !quest.state || !this.getAvailableQuests().includes(quest)) return false;
 
         quest.state.accepted = true;
+        quest.state.dropped = false;
         quest.state.progress = 0;
         quest.state.objectivesCompleted = [];
         
         this.saveQuestData();
-        
-        const container = document.getElementById('interaction-content');
-        if (container) {
-            container.innerHTML += `<p style="color: #10b981; margin-top: 15px;">✓ You've accepted "${quest.name}"!</p>`;
-        }
+        this.renderQuestBoard(Game.player, this.isQuestGiverPanelOpen());
         
         return true;
     },
@@ -287,7 +296,7 @@ const QuestSystem = {
     // Drop an accepted quest (only if not completed)
     dropQuest(questId) {
         const quest = this.activeQuests.find(q => q.id === questId);
-        if (!quest || !quest.state) return false;
+        if (!quest || !quest.state || !quest.state.accepted) return false;
 
         // Cannot drop completed quests
         if (quest.state.completed) {
@@ -300,15 +309,14 @@ const QuestSystem = {
         quest.state.accepted = false;
         
         this.saveQuestData();
-        
-        const container = document.getElementById('interaction-content');
-        if (container) {
-            container.innerHTML += `<p style="color: #f87171; margin-top: 15px;">⚠️ You've dropped "${quest.name}".</p>`;
-        }
-        
-        this.renderQuestBoard(Game.player);
+        this.renderQuestBoard(Game.player, this.isQuestGiverPanelOpen());
         
         return true;
+    },
+
+    isQuestGiverPanelOpen() {
+        const panel = document.getElementById('interaction-panel');
+        return Boolean(panel && !panel.hidden && panel.dataset.type === 'quests');
     },
 
     // Get list of droppable quests
@@ -363,25 +371,19 @@ const QuestSystem = {
 
         if (allComplete && !quest.state.completed) {
             quest.state.completed = true;
-            this.saveQuestData();
-            
             quest = this.activeQuests.find(q => q.id === quest.id);
             if (quest) {
                 this.completedQuests.push(quest);
-                
+                if (quest.category === 'main') {
+                    this.checkPrerequisites();
+                }
+                this.saveQuestData();
+                this.renderQuestBoard(Game.player, this.isQuestGiverPanelOpen());
+
                 const container = document.getElementById('interaction-content');
                 if (container) {
                     const rewardText = `You've completed "${quest.name}"! Reward: +${quest.reward.xp} XP, ${quest.reward.gold} gold`;
                     container.innerHTML += `<p style="color: #fbbf24; font-weight: bold; margin-top: 15px;">🎉 ${rewardText}</p>`;
-                }
-                
-                if (quest.category === 'main') {
-                    const nextQuestIndex = this.mainStorylineQuests.findIndex(q => q.id === quest.id) + 1;
-                    if (nextQuestIndex < this.mainStorylineQuests.length) {
-                        const nextQuestId = this.mainStorylineQuests[nextQuestIndex].id;
-                        this.checkPrerequisites();
-                        QuestSystem.renderQuestBoard(Game.player);
-                    }
                 }
             }
         }
@@ -394,26 +396,34 @@ const QuestSystem = {
         return this.questCategories[category]?.color || '#9ca3af';
     },
 
-    // Render quest board
-    renderQuestBoard(player = Game.player) {
-        const container = document.getElementById('active-quests-container');
-        if (!container) return;
+    // Render accepted quests in the quest log and available quests at the quest giver.
+    renderQuestBoard(player = Game.player, showAvailable = false) {
+        const container = document.getElementById('accepted-quests-container');
 
         const active = this.activeQuests.filter(quest => 
             quest.state && quest.state.accepted && !quest.state.completed
         );
         const completed = this.completedQuests;
-        const available = this.getAvailableQuests();
 
         let activeHtml = '';
         if (active.length) {
             activeHtml = '<h4 style="margin: 10px 0;">In Progress</h4>' + 
-                active.map(quest => `
+                active.map(quest => {
+                    const objective = quest.objectives?.find(item =>
+                        item.type === 'kill' || item.type === 'collect'
+                    );
+                    const progress = objective
+                        ? (objective.type === 'kill'
+                            ? this.playerKillCounts[objective.target]
+                            : this.playerCollections[objective.target]) || 0
+                        : quest.state.progress;
+                    const total = objective?.quantity || '?';
+                    return `
                     <div style="background: #f3f4f6; padding: 8px; margin: 5px 0; border-radius: 4px; border-left: 4px solid ${this.getQuestColor(quest.category)};">
                         <strong style="color: #1f2937;">${quest.name}</strong><br>
                         <small style="color: #374151;">${quest.description}</small><br>
                         <span style="font-size: 12px; color: #6b7280;">
-                            Progress: ${quest.state.progress}/${quest.objectives?.find(o => o.type === 'kill' || o.type === 'collect')?.quantity || '?'}
+                            Progress: ${progress}/${total}
                         </span><br>
                         <button 
                             type="button" 
@@ -423,8 +433,8 @@ const QuestSystem = {
                             Drop Quest
                         </button>
                     </div>
-                `).join('')
-            ;
+                `;
+                }).join('');
         } else {
             activeHtml = '<p style="color: #6b7280;">No active quests.</p>';
         }
@@ -443,10 +453,25 @@ const QuestSystem = {
             completedHtml = '<p style="color: #6b7280;">No completed quests.</p>';
         }
 
-        let availableHtml = '';
-        if (available.length) {
-            availableHtml = '<h4 style="margin: 10px 0; color: #059669;">Available Quests</h4>' + 
-                available.map(quest => `
+        if (container) {
+            container.innerHTML = `
+                <div style="padding: 15px;">
+                    ${activeHtml}
+                    ${completedHtml}
+                </div>
+            `;
+            container.querySelectorAll('.quest-drop-btn').forEach(button => {
+                button.addEventListener('click', () => this.dropQuest(button.dataset.questId));
+            });
+        }
+
+        if (showAvailable) {
+            const interaction = document.getElementById('interaction-content');
+            if (!interaction) return;
+            const available = this.getAvailableQuests();
+            const availableHtml = available.length
+                ? '<h4 style="margin: 10px 0; color: #059669;">Available Quests</h4>' +
+                    available.map(quest => `
                     <div class="shop-item" style="background: #f9fafb; padding: 12px; margin: 8px 0; border-radius: 6px; border-left: 4px solid ${this.getQuestColor(quest.category)};">
                         <div style="display: flex; justify-content: space-between; align-items: start;">
                             <div>
@@ -466,37 +491,12 @@ const QuestSystem = {
                         </div>
                     </div>
                 `).join('')
-            ;
-        } else {
-            availableHtml = '<p style="color: #4b5563;">No new quests available. Talk to King Alaric for a main quest!</p>';
+                : '<p style="color: #4b5563;">No new quests available.</p>';
+            interaction.innerHTML = `<div class="available-quests-widget">${availableHtml}</div>`;
+            interaction.querySelectorAll('.quest-accept-btn').forEach(button => {
+                button.addEventListener('click', () => this.acceptQuest(button.dataset.questId));
+            });
         }
-
-        container.innerHTML = `
-            <div style="padding: 15px;">
-                ${activeHtml}
-                ${completedHtml}
-                <hr style="margin: 15px 0; border: none; border-top: 1px solid #e5e7eb;">
-                ${availableHtml}
-            </div>
-        `;
-
-        container.querySelectorAll('.quest-accept-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const questId = button.dataset.questId;
-                if (this.acceptQuest(questId)) {
-                    button.parentElement.remove();
-                }
-            });
-        });
-
-        container.querySelectorAll('.quest-drop-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const questId = button.dataset.questId;
-                if (this.dropQuest(questId)) {
-                    button.parentElement.remove();
-                }
-            });
-        });
     },
 
     // Render active quests panel
