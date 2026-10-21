@@ -62,11 +62,36 @@ html_rpg_game/
 │   └── style.css       # Layout, styling, and responsive UI
 ├── js/
 │   ├── utils.js        # Shared utility and storage helpers
-│   ├── entities.js     # Player, monsters, items, NPCs, spells
-│   ├── quest.js        # Quest state and progression
-│   ├── game.js         # World generation, movement, UI, save/load
+│   ├── entities.js     # Shared entity namespace
+│   ├── entities/
+│   │   ├── player.js   # Player classes and progression
+│   │   ├── monsters.js # Monster templates and creation
+│   │   ├── items.js    # Item templates and creation
+│   │   ├── npcs.js     # NPC templates and creation
+│   │   └── magic.js    # Spells and biome definitions
+│   ├── quest.js        # Shared quest namespace
+│   ├── quests/
+│   │   ├── data.js     # Main and side quest definitions
+│   │   ├── state.js    # Quest initialization and persistence
+│   │   ├── progression.js # Acceptance, objectives, and completion
+│   │   └── rendering.js   # Quest log and giver UI
+│   ├── game.js         # Shared game state and initialization
+│   ├── game/
+│   │   ├── world.js       # World and region generation
+│   │   ├── movement.js    # Player and world movement
+│   │   ├── feedback.js    # Combat HUD and world item pickups
+│   │   ├── inventory.js   # Items, equipment, gold, and trading
+│   │   ├── interaction.js # NPC interaction
+│   │   ├── rendering.js   # Canvas rendering
+│   │   ├── ui.js          # Event wiring and character creation
+│   │   └── save.js        # Save/load and game-over flow
 │   ├── combat.js       # Combat and spellcasting
-│   ├── sprites.js      # Canvas terrain, item, and character rendering
+│   ├── sprites.js      # Shared sprite renderer
+│   ├── sprites/
+│   │   ├── base.js    # Palettes, patterns, and pixel drawing
+│   │   ├── terrain.js # Terrain drawing
+│   │   ├── characters.js # Hero, monster, and NPC drawing
+│   │   └── items.js   # Item drawing
 │   └── audio.js        # Synthesized music and sound effects
 ├── .vscode/            # Browser launch and debug configurations
 ├── FEATURES.md         # Detailed game mechanics
@@ -81,7 +106,7 @@ The game uses plain JavaScript, HTML, CSS, the Canvas API, and the Web Audio API
 For a quick syntax check of the JavaScript modules:
 
 ```sh
-for file in js/*.js; do node --check "$file"; done
+for file in js/*.js js/game/*.js js/entities/*.js js/quests/*.js js/sprites/*.js; do node --check "$file"; done
 ```
 
 ## Inspiration and Art
