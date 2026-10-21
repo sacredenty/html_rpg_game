@@ -51,7 +51,14 @@
 1. Player chooses to attack nearby enemies
 2. Damage calculated as: `(Player Strength × 1.5) - Enemy Defense`
 3. Monster attacks back with 30% chance per turn
-4. Monster damage: `(Monster Attack × 1.2) - Player Endurance`
+4. Monster damage applies the difficulty multiplier to `(Monster Attack × 1.2) - Player Endurance - Equipment Defense` (minimum 1)
+
+### Difficulty
+- Choose Easy, Medium, or Hard during character creation; the active setting is shown in the status bar and saved with the adventure.
+- Easy: monsters deal 70% damage and award 125% gold.
+- Medium: standard monster damage and gold rewards.
+- Hard: monsters deal 150% damage and award 150% gold.
+- Difficulty scales incoming monster damage after player defense and scales gold earned from defeated monsters. Older saves without a difficulty setting load as Medium.
 
 ### Combat Feedback
 - Damage numbers appear above targets

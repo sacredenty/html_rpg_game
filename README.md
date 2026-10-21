@@ -76,7 +76,7 @@ html_rpg_game/
 
 ## Development
 
-The game uses plain JavaScript, HTML, CSS, the Canvas API, and the Web Audio API. It has no runtime package dependencies or build step. The `npm test` script is currently a placeholder and does not run a test suite.
+The game uses plain JavaScript, HTML, CSS, the Canvas API, and the Web Audio API. It has no runtime package dependencies or build step. Run `npm test` to execute the Playwright suite for character creation, the game interface, and quest progression.
 
 For a quick syntax check of the JavaScript modules:
 

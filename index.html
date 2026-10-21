@@ -18,6 +18,7 @@
                 HP: <span id="hp-display">0/0</span> | 
                 MP: <span id="mp-display">0/0</span> | 
                 Level: <span id="level-display">1</span> |
+                Difficulty: <span id="difficulty-display">Medium</span> |
                 Gold: <span id="gold-display">0</span>
             </div>
             <div id="experience-status">
@@ -181,6 +182,21 @@
                     </fieldset>
                     <p id="class-description" aria-live="polite"></p>
                     <p id="class-stat-summary"></p>
+                    <fieldset id="difficulty-options">
+                        <legend>Choose difficulty</legend>
+                        <label class="class-choice">
+                            <input type="radio" name="difficulty" value="easy">
+                            <span><strong>Easy</strong><small>Monsters deal 70% damage; earn 125% gold.</small></span>
+                        </label>
+                        <label class="class-choice">
+                            <input type="radio" name="difficulty" value="medium" checked>
+                            <span><strong>Medium</strong><small>Standard monster damage and gold rewards.</small></span>
+                        </label>
+                        <label class="class-choice">
+                            <input type="radio" name="difficulty" value="hard">
+                            <span><strong>Hard</strong><small>Monsters deal 150% damage; earn 150% gold.</small></span>
+                        </label>
+                    </fieldset>
                 </section>
                 <section id="character-step-review" class="character-step" tabindex="-1" hidden>
                     <p>Review your hero before setting out.</p>
@@ -189,6 +205,7 @@
                         <div><dt>Class</dt><dd id="review-hero-class"></dd></div>
                         <div><dt>Calling</dt><dd id="review-class-description"></dd></div>
                         <div><dt>Starting abilities</dt><dd id="review-class-stats"></dd></div>
+                        <div><dt>Difficulty</dt><dd id="review-difficulty"></dd></div>
                     </dl>
                 </section>
                 <div class="character-navigation">

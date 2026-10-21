@@ -39,10 +39,26 @@ const Game = {
     
     // Game state
     gameState: 'start', // start, playing, gameover
+    difficulty: 'medium',
+    difficultySettings: {
+        easy: { label: 'Easy', monsterDamageMultiplier: 0.7, goldMultiplier: 1.25 },
+        medium: { label: 'Medium', monsterDamageMultiplier: 1, goldMultiplier: 1 },
+        hard: { label: 'Hard', monsterDamageMultiplier: 1.5, goldMultiplier: 1.5 }
+    },
     characterCreationStep: 0,
     currentSaveSlot: null,
     saveSlotMode: 'load',
     saveSlotReturnToStartup: false,
+
+    getDifficultySettings() {
+        return Object.hasOwn(this.difficultySettings, this.difficulty)
+            ? this.difficultySettings[this.difficulty]
+            : this.difficultySettings.medium;
+    },
+
+    updateDifficultyDisplay() {
+        document.getElementById('difficulty-display').textContent = this.getDifficultySettings().label;
+    },
     
     // Initialize the game
     init() {
@@ -1611,8 +1627,9 @@ const Game = {
             } else {
                 const name = document.getElementById('hero-name').value.trim();
                 const classId = document.querySelector('input[name="hero-class"]:checked')?.value;
+                const difficulty = document.querySelector('input[name="difficulty"]:checked')?.value;
                 document.getElementById('hero-name').setCustomValidity('');
-                this.startAdventure(name, classId);
+                this.startAdventure(name, classId, difficulty);
             }
         });
         document.getElementById('character-next').addEventListener('click', () =>
@@ -1815,6 +1832,14 @@ const Game = {
         document.getElementById('review-class-description').textContent = playerClass.description;
         document.getElementById('review-class-stats').textContent =
             document.getElementById('class-stat-summary').textContent;
+        const difficulty = document.querySelector('input[name="difficulty"]:checked')?.value;
+        const difficultySettings = this.difficultySettings[difficulty];
+        if (!difficultySettings) {
+            throw new Error(`Unknown difficulty: ${difficulty}`);
+        }
+        document.getElementById('review-difficulty').textContent =
+            `${difficultySettings.label} — Monsters deal ${Math.round(difficultySettings.monsterDamageMultiplier * 100)}% damage; ` +
+            `gold rewards are ${Math.round(difficultySettings.goldMultiplier * 100)}%.`;
     },
 
     updateStartupAvailability() {
@@ -1965,9 +1990,13 @@ const Game = {
         }
     },
 
-    startAdventure(name, classId) {
+    startAdventure(name, classId, difficulty = 'medium') {
         if (!Entities.PlayerClasses[classId]) {
             Utils.showMessage('Choose a valid hero class before starting.', 'error');
+            return;
+        }
+        if (!Object.hasOwn(this.difficultySettings, difficulty)) {
+            Utils.showMessage('Choose a valid difficulty before starting.', 'error');
             return;
         }
         if (!name) {
@@ -1977,6 +2006,8 @@ const Game = {
             document.getElementById('hero-name').reportValidity();
             return;
         }
+        this.difficulty = difficulty;
+        this.updateDifficultyDisplay();
         this.player = new Entities.Player(name, classId);
         this.currentSaveSlot = null;
         QuestSystem.init(this.player, null);
@@ -2039,6 +2070,7 @@ const Game = {
             npcs: this.npcs,
             terrain: this.serializeTerrain(),
             gold: this.getGold(),
+            difficulty: this.difficulty,
             width: this.width,
             height: this.height,
             viewWidth: this.viewWidth,
@@ -2088,6 +2120,10 @@ const Game = {
             return false;
         }
         this.currentSaveSlot = slot;
+        this.difficulty = Object.hasOwn(this.difficultySettings, saved.difficulty)
+            ? saved.difficulty
+            : 'medium';
+        this.updateDifficultyDisplay();
         
         this.width = saved.width || 50;
         this.height = saved.height || 30;

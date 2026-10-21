@@ -1,5 +1,7 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
+const path = require('node:path');
+const { pathToFileURL } = require('node:url');
 
 /**
  * Read environment variables from file.
@@ -30,7 +32,7 @@ module.exports = defineConfig({
    */
   use: {
     /* Base URL to use in actions like `await page.goto('/')` */
-    baseURL: 'file:///home/chris/code/html_rpg_game/',
+    baseURL: pathToFileURL(`${__dirname}${path.sep}`).href,
 
     /* Collect trace when retrying with --force-show */
     trace: 'on-first-retry',

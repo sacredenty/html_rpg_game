@@ -77,7 +77,7 @@ const GameCombat = {
         if (monster.hp <= 0) {
             monster.alive = false;
             const levelsGained = this.player.gainXp(monster.xp);
-            const goldGained = Utils.random(monster.gold - 2, monster.gold + 3);
+            const goldGained = this.calculateMonsterGold(monster);
             this.addGold(goldGained);
             const levelMessage = levelsGained > 0 ? ` Level up! You reached level ${this.player.level}.` : '';
             
@@ -110,13 +110,22 @@ const GameCombat = {
             .forEach(monster => this.monsterTurn(monster));
     },
 
+    calculateMonsterGold(monster) {
+        const baseGold = Utils.random(monster.gold - 2, monster.gold + 3);
+        return Math.max(1, Math.round(baseGold * this.getDifficultySettings().goldMultiplier));
+    },
+
+    calculateMonsterDamage(monster) {
+        const defense = this.player.stats.endurance + this.player.getEquipmentBonus('defense');
+        const baseDamage = Math.max(0, monster.attack * 1.2 - defense);
+        return Math.max(1, Math.floor(baseDamage * this.getDifficultySettings().monsterDamageMultiplier));
+    },
+
     monsterTurn(monster) {
         if (this.player.hp <= 0 || !monster.alive ||
             Utils.distance(this.player, monster) > 1.5 || Math.random() >= 0.3) return;
 
-        const monsterDamage = monster.attack * 1.2 -
-            this.player.stats.endurance - this.player.getEquipmentBonus('defense');
-        const actualDamage = Math.max(1, Math.floor(monsterDamage));
+        const actualDamage = this.calculateMonsterDamage(monster);
         this.player.hp -= actualDamage;
 
         if (actualDamage > 0) {
