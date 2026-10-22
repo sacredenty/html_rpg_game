@@ -57,6 +57,46 @@ Object.assign(QuestSystem, {
             prerequisites: ['quest_sword_hunt'],
             objectives: [{ type: 'kill', target: 'dragon', quantity: 1, description: 'Defeat the Great Dragon' }],
             completed: false
+        },
+        {
+            id: 'quest_fire_draught',
+            name: "Fire Draught",
+            description: "A fire drake has been spotted in the volcanic regions! Bring the realm back from its heat.",
+            type: 'kill', category: 'main',
+            reward: { xp: 700, gold: 400 },
+            prerequisites: ['quest_dragon_slayer'],
+            objectives: [{ type: 'kill', target: 'fireDrake', quantity: 1, description: 'Defeat the Fire Drake' }],
+            completed: false
+        },
+        {
+            id: 'quest_frozen_peaks',
+            name: "Frozen Peaks",
+            description: "The ice dragon has frozen a mountain valley! Free the people before it spreads.",
+            type: 'kill', category: 'main',
+            reward: { xp: 750, gold: 450 },
+            prerequisites: ['quest_fire_draught'],
+            objectives: [{ type: 'kill', target: 'iceDragon', quantity: 1, description: 'Defeat the Ice Dragon' }],
+            completed: false
+        },
+        {
+            id: 'quest_shadow_fall',
+            name: "Shadow Fall",
+            description: "Ancient shadows have taken possession of a knight! Banish it before it corrupts more souls.",
+            type: 'kill', category: 'main',
+            reward: { xp: 800, gold: 500 },
+            prerequisites: ['quest_frozen_peaks'],
+            objectives: [{ type: 'kill', target: 'shadowKnight', quantity: 1, description: 'Defeat the Shadow Knight' }],
+            completed: false
+        },
+        {
+            id: 'quest_dark_lord_final',
+            name: "Dark Lord's End",
+            description: "The dark lord stands before you! This final battle will determine the fate of our world.",
+            type: 'kill', category: 'main',
+            reward: { xp: 1000, gold: 750 },
+            prerequisites: ['quest_shadow_fall'],
+            objectives: [{ type: 'kill', target: 'darkLord', quantity: 1, description: 'Defeat the Dark Lord' }],
+            completed: false
         }
     ],
 
@@ -131,6 +171,36 @@ Object.assign(QuestSystem, {
             reward: { xp: 40, gold: 25 },
             prerequisites: [],
             objectives: [{ type: 'collect', target: 'wood', quantity: 10, description: 'Gather firewood' }],
+            completed: false
+        },
+        {
+            id: 'quest_fire_watcher',
+            name: "Fire Watcher's Challenge",
+            description: "An old fire watcher challenges you to defeat a drake as proof of your worthiness.",
+            type: 'kill', category: 'side',
+            reward: { xp: 400, gold: 200 },
+            prerequisites: [],
+            objectives: [{ type: 'kill', target: 'fireDrake', quantity: 1, description: 'Defeat a drake' }],
+            completed: false
+        },
+        {
+            id: 'quest_mage_challenge',
+            name: "Mage Challenge",
+            description: "A mysterious mage challenges you to test your magical prowess against an ice dragon.",
+            type: 'kill', category: 'side',
+            reward: { xp: 350, gold: 200 },
+            prerequisites: [],
+            objectives: [{ type: 'kill', target: 'iceDragon', quantity: 1, description: 'Defeat an ice dragon' }],
+            completed: false
+        },
+        {
+            id: 'quest_paladin_challenge',
+            name: "Paladin Challenge",
+            description: "A fallen paladin seeks redemption through victory over shadow magic.",
+            type: 'kill', category: 'side',
+            reward: { xp: 400, gold: 200 },
+            prerequisites: [],
+            objectives: [{ type: 'kill', target: 'shadowKnight', quantity: 1, description: 'Defeat a shadow knight' }],
             completed: false
         }
     ],

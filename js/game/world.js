@@ -43,6 +43,118 @@ Object.assign(Game, {
             this.spawnMonster('goblin', x, y);
         }
 
+
+    // Add boss spawn regions based on exploration progress
+    this.addBossRegions = function() {
+        // Fire Drake's Volcano - hot terrain with lava patches
+        const volcanoX = this.width - 2;
+        const volcanoY = Math.floor(this.height / 2);
+        
+        if (this.isFreeTile({x: volcanoX, y: volcanoY})) {
+            // Create volcanic terrain pattern
+            for (let dy = -2; dy <= 2; dy++) {
+                for (let dx = -2; dx <= 2; dx++) {
+                    const vx = volcanoX + dx;
+                    const vy = volcanoY + dy;
+                    
+                    if (Utils.inBounds({x: vx, y: vy}, this.width, this.height) && 
+                        !this.isBlockedTile(vx, vy)) {
+                        // Lava pools in volcano area
+                        if (Math.random() < 0.15) {
+                            this.map[vy][vx].type = 'lava';
+                        }
+                        
+                        // Fire drake spawn chance
+                        if (Math.random() < 0.3 && !this.monsters.some(m => 
+                            Math.abs(m.x - vx) < 2 && Math.abs(m.y - vy) < 2)) {
+                            this.spawnMonster('fireDrake', vx, vy);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Ice Dragon's Frozen Peaks - cold mountain region
+        const iceX = Math.floor(this.width / 3);
+        const iceY = this.height - 2;
+        
+        if (this.isFreeTile({x: iceX, y: iceY})) {
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                    const ix = iceX + dx;
+                    const iy = iceY + dy;
+                    
+                    if (Utils.inBounds({x: ix, y: iy}, this.width, this.height) && 
+                        !this.isBlockedTile(ix, iy)) {
+                        // Snow patches
+                        if (Math.random() < 0.12) {
+                            this.map[iy][ix].type = 'snow';
+                        }
+                        
+                        // Ice dragon spawn
+                        if (Math.random() < 0.3 && !this.monsters.some(m => 
+                            Math.abs(m.x - ix) < 2 && Math.abs(m.y - iy) < 2)) {
+                            this.spawnMonster('iceDragon', ix, iy);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Shadow Knight's Dark Cavern - shadowy dungeon expansion
+        const darkX = Math.floor(this.width / 3);
+        const darkY = Math.floor(this.height / 3);
+        
+        if (this.isFreeTile({x: darkX, y: darkY})) {
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                    const dx2 = darkX + dx;
+                    const dy2 = darkY + dy;
+                    
+                    if (Utils.inBounds({x: dx2, y: dy2}, this.width, this.height) && 
+                        !this.isBlockedTile(dx2, dy2)) {
+                        // Shadowy patches
+                        if (Math.random() < 0.1) {
+                            this.map[dy2][dx2].type = 'shadow';
+                        }
+                        
+                        // Shadow knight spawn
+                        if (Math.random() < 0.3 && !this.monsters.some(m => 
+                            Math.abs(m.x - dx2) < 2 && Math.abs(m.y - dy2) < 2)) {
+                            this.spawnMonster('shadowKnight', dx2, dy2);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Dark Lord's Abyss - ultimate boss arena
+        const abyssX = this.width - 1;
+        const abyssY = Math.floor(this.height * 0.75);
+        
+        if (this.isFreeTile({x: abyssX, y: abyssY})) {
+            for (let dy = -2; dy <= 2; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                    const ax = abyssX + dx;
+                    const ay = abyssY + dy;
+                    
+                    if (Utils.inBounds({x: ax, y: ay}, this.width, this.height) && 
+                        !this.isBlockedTile(ax, ay)) {
+                        // Dark mist patterns
+                        if (Math.random() < 0.08) {
+                            this.map[ay][ax].type = 'abyss';
+                        }
+                        
+                        // Dark lord spawn (very rare)
+                        if (Math.random() < 0.15 && !this.monsters.some(m => 
+                            Math.abs(m.x - ax) < 2 && Math.abs(m.y - ay) < 2)) {
+                            this.spawnMonster('darkLord', ax, ay);
+                        }
+                    }
+                }
+            }
+        }
+    };
         // Add wolves in mountain area
         for (let i = 0; i < 3; i++) {
             const x = Utils.random(31, 37);

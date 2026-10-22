@@ -84,6 +84,59 @@ Object.assign(SpriteRenderer, {
                     ctx.fillRect(left + 18, top + 25, 6, 12);
                     ctx.fillStyle = '#f5d890';
                     ctx.fillRect(left + 20, top + 29, 2, 2);
+                } else if (type === 'lava') {
+                    // Lava/fire terrain
+                    ctx.fillStyle = '#7c2d12';
+                    ctx.fillRect(left, top, tileSize, tileSize);
+                    ctx.fillStyle = '#c2410c';
+                    ctx.fillRect(left + 3, top + 3, tileSize - 6, tileSize - 6);
+                    // Molten drips
+                    ctx.fillStyle = '#f59e0b';
+                    if ((x + y) % 3 === 0) {
+                        ctx.fillRect(left + 6, top + 8, 4, tileSize - 10);
+                    }
+                    if (x % 5 === 0) {
+                        ctx.fillRect(left + 20, top + 5, 3, 8);
+                    }
+                } else if (type === 'snow') {
+                    // Snow/ice terrain
+                    ctx.fillStyle = '#e8f4f8';
+                    ctx.fillRect(left, top, tileSize, tileSize);
+                    ctx.fillStyle = '#dbeafe';
+                    ctx.fillRect(left + 2, top + 2, tileSize - 4, tileSize - 4);
+                    // Snow patches
+                    ctx.fillStyle = '#ffffff';
+                    const snowSeed = Math.abs(Math.imul(x + y, 1234567));
+                    if (snowSeed % 7 === 0) {
+                        ctx.fillRect(left + 8, top + 6, 4, 3);
+                        ctx.fillRect(left + 16, top + 12, 5, 3);
+                    }
+                    // Frost crystals
+                    ctx.fillStyle = '#93c5fd';
+                    if (x % 4 === 0) {
+                        ctx.fillRect(left + left, top + top, 2, 2);
+                    }
+                } else if (type === 'shadow') {
+                    // Shadowy cavern terrain
+                    const baseColors = ['#1f2937', '#111827', '#000000'];
+                    ctx.fillStyle = baseColors[(x + y) % 3];
+                    ctx.fillRect(left, top, tileSize, tileSize);
+                    // Shadow wisps
+                    ctx.fillStyle = '#374151';
+                    if (y % 5 === 0) {
+                        ctx.fillRect(left + 12, top + 8, 4, 2);
+                    }
+                } else if (type === 'abyss') {
+                    // Dark abyss/mist terrain
+                    const mistColors = ['#1a1a1a', '#0d0d0d', '#050505'];
+                    ctx.fillStyle = mistColors[(x + y) % 3];
+                    ctx.fillRect(left, top, tileSize, tileSize);
+                    // Dark mist swirls
+                    ctx.fillStyle = '#262626';
+                    if ((x * y) % 11 === 0) {
+                        ctx.fillRect(left + 4, top + 10, 6, 3);
+                        ctx.fillRect(left + 20, top + 15, 8, 2);
+                    }
                 }
             }
         }

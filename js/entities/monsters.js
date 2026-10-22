@@ -49,18 +49,6 @@ Object.assign(Entities, {
             color: '#e5e7eb',
             size: 0.6
         },
-        dragon: {
-            name: 'Dragon',
-            hp: 300,
-            maxHp: 300,
-            attack: 25,
-            defense: 15,
-            xp: 500,
-            gold: 500,
-            symbol: '🐉',
-            color: '#a855f7',
-            size: 1.2
-        },
         skeleton: {
             name: 'Skeleton',
             hp: 45,
@@ -72,6 +60,76 @@ Object.assign(Entities, {
             symbol: '💀',
             color: '#9ca3af',
             size: 0.7
+        },
+
+
+        // ULTIMATE BOSS - Final challenge of the main questline
+        darkLord: {
+            name: 'Dark Lord',
+            hp: 800,
+            maxHp: 800,
+            attack: 35,
+            defense: 20,
+            xp: 1200,
+            gold: 600,
+            symbol: '👿',
+            color: '#7f1d1d',
+            size: 1.5,
+            special: 'Dark Presence'
+        },
+
+        // Elite Boss Monsters
+        fireDrake: {
+            name: 'Fire Drake',
+            hp: 450,
+            maxHp: 450,
+            attack: 28,
+            defense: 16,
+            xp: 650,
+            gold: 350,
+            symbol: '🐲',
+            color: '#f97316',
+            size: 1.4,
+            special: 'Fire Breath'
+        },
+        iceDragon: {
+            name: 'Ice Dragon',
+            hp: 420,
+            maxHp: 420,
+            attack: 26,
+            defense: 18,
+            xp: 680,
+            gold: 380,
+            symbol: '❄️',
+            color: '#06b6d4',
+            size: 1.4,
+            special: 'Ice Nova'
+        },
+        shadowKnight: {
+            name: 'Shadow Knight',
+            hp: 350,
+            maxHp: 350,
+            attack: 24,
+            defense: 14,
+            xp: 550,
+            gold: 300,
+            symbol: '🗡️',
+            color: '#6b7280',
+            size: 1.3,
+            special: 'Shadow Step'
+        },
+
+        dragon: {
+            name: 'Dragon',
+            hp: 300,
+            maxHp: 300,
+            attack: 25,
+            defense: 15,
+            xp: 500,
+            gold: 500,
+            symbol: '🐉',
+            color: '#a855f7',
+            size: 1.2
         }
     },
 

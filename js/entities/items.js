@@ -93,6 +93,58 @@ Object.assign(Entities, {
             bonuses: { strength: 2 },
             symbol: '🍀',
             color: '#4ade80'
+        },
+
+        // NEW BOSS DROP ITEMS
+        fireCrystal: {
+            name: 'Fire Crystal',
+            description: '+5 Magic, burns on contact (+3 damage vs fire enemies)',
+            effect: () => ({ magic: 5 }),
+            equipmentSlot: 'accessory',
+            bonuses: { magic: 5, elementDamage: 'fire' },
+            symbol: '🔥',
+            color: '#f97316'
+        },
+        iceShard: {
+            name: 'Ice Shard',
+            description: '+5 Magic, slows enemies on hit (+3 damage vs ice enemies)',
+            effect: () => ({ magic: 5 }),
+            equipmentSlot: 'accessory',
+            bonuses: { magic: 5, elementDamage: 'ice' },
+            symbol: '❄️',
+            color: '#06b6d4'
+        },
+        shadowShard: {
+            name: 'Shadow Shard',
+            description: '+3 Strength, drains health on critical hits',
+            effect: () => ({ strength: 3 }),
+            equipmentSlot: 'accessory',
+            bonuses: { strength: 3, lifeDrain: true },
+            symbol: '🌑',
+            color: '#6b7280'
+        },
+        darkLordsHeart: {
+            name: "Dark Lord's Heart",
+            description: '+15 Strength, legendary artifact of immense power',
+            effect: () => ({ strength: 15 }),
+            equipmentSlot: 'weapon',
+            bonuses: { strength: 15, legendary: true },
+            symbol: '👑',
+            color: '#f43f5e'
+        },
+        fireElixir: {
+            name: 'Fire Elixir',
+            description: 'Restores 50 HP over 10 seconds (long duration)',
+            effect: () => ({ hp: 50, duration: 10 }),
+            symbol: '🔥✨',
+            color: '#fb923c'
+        },
+        frostBrew: {
+            name: 'Frost Brew',
+            description: 'Restores 40 HP and reduces incoming damage by 5 for 15 seconds',
+            effect: () => ({ hp: 40, damageReduction: 5 }),
+            symbol: '❄️💙',
+            color: '#67e8f9'
         }
     },
 
