@@ -80,6 +80,25 @@ Object.assign(QuestSystem, {
             console.error('Failed to save quest data:', error);
             return false;
         }
+    },
+    
+    // Get collect quests by item target
+    getCollectQuestsByTarget(target) {
+        if (!this.activeQuests) return [];
+        
+        const collectQuests = this.activeQuests.filter(quest => {
+            if (!quest.state || !quest.state.accepted || quest.state.completed) return false;
+            
+            // Look at all objectives
+            if (quest.objectives && Array.isArray(quest.objectives)) {
+                return quest.objectives.some(obj => 
+                    obj.type === 'collect' && obj.target === target
+                );
+            }
+            return false;
+        });
+        
+        return collectQuests;
     }
 });
 

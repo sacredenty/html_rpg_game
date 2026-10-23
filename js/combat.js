@@ -86,13 +86,15 @@ const GameCombat = {
             if (killQuests.length > 0) {
                 // Complete the first active quest for this target type
                 const quest = killQuests[0];
-                QuestSystem.completeObjective(quest.id, {
+                const completed = QuestSystem.completeObjective(quest.id, {
                     type: 'kill',
                     target: monster.type,
                     quantity: 1
                 });
                 // Update UI to show progress after completing objective
-                QuestSystem.renderQuestBoard(Game.player, false);
+                if (completed) {
+                    QuestSystem.renderQuestBoard(Game.player, false);
+                }
             }
             
             Utils.showMessage(`Defeated ${monster.name}! Gained ${monster.xp} XP and ${goldGained} gold.${levelMessage}`, 'success');

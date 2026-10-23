@@ -115,10 +115,17 @@ Object.assign(QuestSystem, {
                 
                 this.saveQuestData();
                 
+                // Always try to check if quest is complete when an objective meets threshold
                 if (this.checkQuestComplete(quest)) {
                     return true;
                 }
             }
+        } else {
+            // Even for partial completion, we might want to re-render for immediate UI update,
+            // but only for progress display purposes, not return as "completed"
+            // The current return is fine - we're just not handling the "return false case" properly 
+            this.saveQuestData();
+            return false;
         }
 
         return false;

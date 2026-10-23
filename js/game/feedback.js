@@ -124,12 +124,15 @@ Object.assign(Game, {
                 if (collectQuests.length > 0) {
                     // Complete the first active quest for this target type
                     const quest = collectQuests[0];
-                    // Add progress to the quest
+                    // Add progress to the quest and render UI immediately
                     QuestSystem.completeObjective(quest.id, {
                         type: 'collect',
                         target: item.type,
                         quantity: 1
                     });
+                    
+                    // Always render quests panel to show immediate update for collection
+                    QuestSystem.renderQuestBoard(Game.player, false);
                 }
                 
                 Utils.showMessage(`Picked up: ${item.name}!`, 'success');
