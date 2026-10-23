@@ -91,6 +91,8 @@ const GameCombat = {
                     target: monster.type,
                     quantity: 1
                 });
+                // Update UI to show progress after completing objective
+                QuestSystem.renderQuestBoard(Game.player, false);
             }
             
             Utils.showMessage(`Defeated ${monster.name}! Gained ${monster.xp} XP and ${goldGained} gold.${levelMessage}`, 'success');

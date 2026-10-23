@@ -92,26 +92,26 @@ Object.assign(QuestSystem, {
 
     // Complete a quest objective
 
-    completeObjective(questId, objectiveType, target) {
+    completeObjective(questId, objective) {
         const quest = this.activeQuests.find(q => q.id === questId);
-        if (!quest || !quest.state) return false;
+        if (!quest || !quest.state || quest.state.completed) return false;
 
-        if (objectiveType === 'kill') {
-            this.playerKillCounts[target] = (this.playerKillCounts[target] || 0) + 1;
-        } else if (objectiveType === 'collect') {
-            this.playerCollections[target] = (this.playerCollections[target] || 0) + 1;
+        if (objective.type === 'kill') {
+            this.playerKillCounts[objective.target] = (this.playerKillCounts[objective.target] || 0) + 1;
+        } else if (objective.type === 'collect') {
+            this.playerCollections[objective.target] = (this.playerCollections[objective.target] || 0) + 1;
         }
 
-        const objective = quest.objectives.find(obj => obj.type === objectiveType);
-        if (!objective) return false;
+        const objectiveData = quest.objectives.find(obj => obj.type === objective.type && obj.target === objective.target);
+        if (!objectiveData) return false;
 
-        const targetCount = objective.quantity || 1;
+        const targetCount = objectiveData.quantity || 1;
         
-        if (this.playerKillCounts[target] >= targetCount || 
-            this.playerCollections[target] >= targetCount) {
+        if ((objective.type === 'kill' && this.playerKillCounts[objective.target] >= targetCount) || 
+            (objective.type === 'collect' && this.playerCollections[objective.target] >= targetCount)) {
             
-            if (!quest.state.objectivesCompleted.includes(objectiveType)) {
-                quest.state.objectivesCompleted.push(objectiveType);
+            if (!quest.state.objectivesCompleted.includes(objective.type)) {
+                quest.state.objectivesCompleted.push(objective.type);
                 
                 this.saveQuestData();
                 
@@ -134,8 +134,10 @@ Object.assign(QuestSystem, {
 
         if (allComplete && !quest.state.completed) {
             quest.state.completed = true;
-            quest = this.activeQuests.find(q => q.id === quest.id);
-            if (quest) {
+            // Find the quest in the active quests list to update it properly
+            const questIndex = this.activeQuests.findIndex(q => q.id === quest.id);
+            if (questIndex !== -1) {
+                this.activeQuests[questIndex] = quest;
                 this.completedQuests.push(quest);
                 if (quest.category === 'main') {
                     this.checkPrerequisites();
@@ -152,6 +154,26 @@ Object.assign(QuestSystem, {
         }
 
         return allComplete;
+    },
+
+    // Get kill quests by monster target
+
+    getKillQuestsByTarget(target) {
+        if (!this.activeQuests) return [];
+        
+        const killQuests = this.activeQuests.filter(quest => {
+            if (!quest.state || !quest.state.accepted || quest.state.completed) return false;
+            
+            // Look at all objectives
+            if (quest.objectives && Array.isArray(quest.objectives)) {
+                return quest.objectives.some(obj => 
+                    obj.type === 'kill' && obj.target === target
+                );
+            }
+            return false;
+        });
+        
+        return killQuests;
     },
 
     // Get quest color based on category
