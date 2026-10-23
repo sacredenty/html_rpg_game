@@ -28,8 +28,25 @@
         </header>
 
         <main>
-            <!-- Left side: Controls -->
-            <aside class="sidebar">
+            <!-- Left side: Inventory -->
+            <aside class="sidebar inventory-sidebar">
+                <section class="inventory-panel">
+                    <h3>Inventory (<span id="item-count">0</span>)</h3>
+                    <div id="inventory-list"></div>
+                    <button id="use-item-btn">Use Item</button>
+                </section>
+                <section class="equipment-panel">
+                    <h3>Equipment</h3>
+                    <div id="equipment-slots"></div>
+                </section>
+                <section class="quest-log">
+                    <h3>Quest Log</h3>
+                    <div id="accepted-quests-container"></div>
+                </section>
+            </aside>
+
+            <!-- Middle: Controls -->
+            <aside class="sidebar controls-sidebar">
                 <section class="movement-panel">
                     <h3>Movement</h3>
                     <div class="direction-controls">
@@ -117,20 +134,8 @@
             <!-- Right side: Game area -->
             <div id="game-area">
                 <canvas id="gameCanvas" title="Click King Alaric or the Merchant to interact"></canvas>
-                <section class="inventory-panel">
-                    <h3>Inventory (<span id="item-count">0</span>)</h3>
-                    <div id="inventory-list"></div>
-                    <button id="use-item-btn">Use Item</button>
-                </section>
-                <section class="equipment-panel">
-                    <h3>Equipment</h3>
-                    <div id="equipment-slots"></div>
-                </section>
-                <section class="quest-log">
-                    <h3>Quest Log</h3>
-                    <div id="accepted-quests-container"></div>
-                </section>
             </div>
+        </main>
         </main>
 
         <dialog id="startup-menu" aria-labelledby="startup-title">

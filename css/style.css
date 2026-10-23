@@ -51,8 +51,23 @@ main {
 .sidebar {
   width: 200px;
   padding: 10px;
-  border-right: 1px solid #4b5563;
   overflow-y: auto;
+}
+
+.inventory-sidebar {
+  border-right: 1px solid #4b5563;
+}
+
+.controls-sidebar {
+  border-right: 1px solid #4b5563;
+}
+
+/* Game area */
+#game-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* Button Styles */
@@ -78,4 +93,31 @@ footer {
   text-align: center;
   font-size: 0.8em;
   color: #ccc;
+}
+
+/* Inventory Panel */
+.inventory-panel {
+  margin-bottom: 15px;
+}
+
+.inventory-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  background: #374151;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+.inventory-item-name {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Equipment and Quests */
+.equipment-panel,
+.quest-log {
+  margin-bottom: 15px;
 }
