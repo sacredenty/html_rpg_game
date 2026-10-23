@@ -44,10 +44,19 @@ Object.assign(Entities, {
             name: 'Wooden Shield',
             description: '+2 Defense',
             effect: () => ({ defense: 2 }),
-            equipmentSlot: 'armor',
+            equipmentSlot: 'shield',
             bonuses: { defense: 2 },
             symbol: '🛡️',
             color: '#9ca3af'
+        },
+        steelShield: {
+            name: 'Steel Shield',
+            description: '+5 Defense',
+            effect: () => ({ defense: 5 }),
+            equipmentSlot: 'shield',
+            bonuses: { defense: 5 },
+            symbol: '🛡️',
+            color: '#cbd5e1'
         },
         leatherArmor: {
             name: 'Leather Armor',

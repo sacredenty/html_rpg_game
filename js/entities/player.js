@@ -72,6 +72,7 @@ Object.assign(Entities, {
             this.equipment = {
                 weapon: null,
                 armor: null,
+                shield: null,
                 accessory: null
             };
 

@@ -177,6 +177,7 @@ Object.assign(Game, {
             const slotLabels = {
                 weapon: 'Weapon',
                 armor: 'Armor',
+                shield: 'Shield', 
                 accessory: 'Accessory'
             };
             slots.innerHTML = Object.entries(slotLabels).map(([slot, label]) => {

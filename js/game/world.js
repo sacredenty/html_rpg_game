@@ -16,11 +16,12 @@ Object.assign(Game, {
                     }
                 } else if (rand < 0.15) {
                     this.spawnMonster(getRandomMonster(), x, y);
-                } else if (rand < 0.18) {
+                } else if (rand < 0.20) {
+                    // Increased chance of equipment drops
                     this.spawnItem(getRandomEquipmentType(), x, y);
-                } else if (rand < 0.2) {
-                    this.spawnItem(Math.random() < 0.5 ? 'healthPotion' : 'healingHerb', x, y);
                 } else if (rand < 0.25) {
+                    this.spawnItem(Math.random() < 0.5 ? 'healthPotion' : 'healingHerb', x, y);
+                } else if (rand < 0.30) {
                     // Spawn NPCs at specific locations
                     if (Math.random() < 0.5) {
                         this.spawnNPC('villager', x, y);

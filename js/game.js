@@ -28,6 +28,7 @@ const Game = {
         manaPotion: 10,
         sword: 80,
         shield: 55,
+        steelShield: 120,
         leatherArmor: 70,
         chainmail: 160,
         goldRing: 100,
@@ -113,7 +114,7 @@ function getRandomMonster() {
 
 function getRandomEquipmentType() {
     const types = [
-        'sword', 'shield', 'leatherArmor', 'chainmail',
+        'sword', 'shield', 'steelShield', 'leatherArmor', 'chainmail',
         'goldRing', 'silverRing', 'luckyCharm'
     ];
     return types[Utils.random(0, types.length - 1)];
