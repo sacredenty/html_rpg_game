@@ -7,7 +7,11 @@ Object.assign(Entities, {
             stats: { strength: 14, magic: 6, endurance: 14, agility: 8 },
             maxHp: 130,
             maxMp: 0,
-            spells: []
+            spells: [],
+            abilities: [
+                { name: 'Shield Bash', description: 'Deal bonus damage and knockback when attacking with shield equipped (Level 5)', level: 5, type: 'damage' },
+                { name: 'Battle Cry', description: 'Temporarily boost strength for allies in area (Level 10)', level: 10, type: 'buff' }
+            ]
         },
         mage: {
             name: 'Mage',
@@ -15,7 +19,11 @@ Object.assign(Entities, {
             stats: { strength: 6, magic: 15, endurance: 8, agility: 10 },
             maxHp: 85,
             maxMp: 90,
-            spells: ['arcaneBolt', 'flameBurst', 'healingLight']
+            spells: ['arcaneBolt', 'flameBurst', 'healingLight'],
+            abilities: [
+                { name: 'Mana Shield', description: 'Convert a portion of damage taken to MP (Level 5)', level: 5, type: 'defense' },
+                { name: 'Arcane Mastery', description: 'Increase spell damage by 20% (Level 10)', level: 10, type: 'buff' }
+            ]
         },
         ranger: {
             name: 'Ranger',
@@ -23,7 +31,11 @@ Object.assign(Entities, {
             stats: { strength: 11, magic: 8, endurance: 10, agility: 14 },
             maxHp: 105,
             maxMp: 25,
-            spells: ['healingLight']
+            spells: ['healingLight'],
+            abilities: [
+                { name: 'Hunter\'s Instinct', description: 'Bonus damage against weak enemies (Level 5)', level: 5, type: 'damage' },
+                { name: 'Stealth', description: 'Move undetected in forests for invisibility (Level 10)', level: 10, type: 'utility' }
+            ]
         }
     },
 
@@ -102,6 +114,23 @@ Object.assign(Entities, {
             return Boolean(playerClass?.spells.includes(spellId));
         }
 
+        // Check if player has access to a class ability at current level
+        hasAbility(abilityName) {
+            const playerClass = Entities.PlayerClasses[this.classId];
+            if (!playerClass || !playerClass.abilities) return false;
+            
+            const ability = playerClass.abilities.find(a => a.name === abilityName);
+            return ability && this.level >= ability.level;
+        }
+
+        // Get abilities available for current class and level
+        getAvailableAbilities() {
+            const playerClass = Entities.PlayerClasses[this.classId];
+            if (!playerClass || !playerClass.abilities) return [];
+            
+            return playerClass.abilities.filter(ability => this.level >= ability.level);
+        }
+
         gainXp(amount) {
             this.xp += amount;
             let levelsGained = 0;
@@ -178,6 +207,10 @@ Object.assign(Entities, {
             magicBar.value = Math.min(s.magic * scale, 100);
             enduranceBar.value = Math.min(s.endurance * scale, 100);
             this.updateExperienceDisplay();
+            // Update abilities when stats change (e.g. for class-specific buffs)
+            if (typeof window.updateAbilitiesDisplay === 'function') {
+                window.updateAbilitiesDisplay();
+            }
         }
 
         updateExperienceDisplay() {

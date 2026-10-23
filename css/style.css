@@ -118,6 +118,36 @@ footer {
 
 /* Equipment and Quests */
 .equipment-panel,
-.quest-log {
+.quest-log,
+.abilities-panel {
   margin-bottom: 15px;
+}
+
+/* Abilities */
+.abilities-panel {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #4b5563;
+}
+
+.ability-item {
+  background: #374151;
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.ability-description {
+  display: block;
+  font-size: 0.8em;
+  color: #cbd5e1;
+}
+
+.ability-type {
+  display: inline-block;
+  background: #6b7280;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.7em;
+  margin-left: 5px;
 }

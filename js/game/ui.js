@@ -211,6 +211,7 @@ Object.assign(Game, {
         this.updateInventoryDisplay();
         this.updateEquipmentDisplay();
         this.updateSpellDisplay();
+        this.updateAbilitiesDisplay();
     },
 
     updateClassDescription() {
@@ -439,5 +440,26 @@ Object.assign(Game, {
                 ? `${spell.description} Cost: ${spell.manaCost} MP${spell.range ? ` · Range: ${spell.range} tiles` : ''}`
                 : '';
         document.getElementById('spell-description').textContent = description;
+    },
+
+    updateAbilitiesDisplay() {
+        const abilitiesPanel = document.querySelector('.abilities-panel');
+        if (!abilitiesPanel) return;
+        
+        const abilities = this.player.getAvailableAbilities();
+        const container = document.getElementById('abilities-list');
+        if (!container) return;
+        
+        if (abilities.length === 0) {
+            container.innerHTML = '<p>No abilities unlocked yet.</p>';
+        } else {
+            container.innerHTML = abilities.map(ability => `
+                <div class="ability-item">
+                    <strong>${ability.name}</strong> <small>(Level ${ability.level})</small><br>
+                    <span class="ability-description">${ability.description}</span>
+                    ${ability.type ? `<span class="ability-type">[${ability.type}]</span>` : ''}
+                </div>
+            `).join('');
+        }
     },
 });

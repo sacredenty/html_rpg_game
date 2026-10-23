@@ -100,11 +100,11 @@ function getRandomMonster() {
     // Weighted random monster selection (common: small chance, rare bosses have low chance)
     const roll = Math.random() * 100;
     
-    if (roll < 1) return 'darkLord';     // 5% - ultra rare boss drop
-    if (roll < 2) return 'shadowKnight'; // 7% - very rare elite
-    if (roll < 3) return 'iceDragon';    // 7% - very rare elite  
-    if (roll < 4) return 'fireDrake';    // 7% - very rare elite
-    if (roll < 5) return 'dragon';       // 24% - uncommon boss
+    if (roll < 1) return 'darkLord';     // 1% - ultra rare boss drop
+    if (roll < 2) return 'shadowKnight'; // 1% - very rare elite
+    if (roll < 3) return 'iceDragon';    // 1% - very rare elite  
+    if (roll < 4) return 'fireDrake';    // 1% - very rare elite
+    if (roll < 5) return 'dragon';       // 5% - uncommon boss
     if (roll < 70) return 'skeleton';     // 20% - uncommon enemy
     if (roll < 80) return 'orc';          // 10% - common enemy
     if (roll < 90) return 'goblin';       // 10% - common enemy
