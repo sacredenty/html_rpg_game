@@ -26,14 +26,46 @@ const Game = {
         healthPotion: 12,
         healingHerb: 5,
         manaPotion: 10,
+
+        // Weapons
         sword: 80,
+        legendarySword: 400,
+        darkLordsSword: 800,
+
+        // Shields
         shield: 55,
         steelShield: 120,
+
+        // Armor
         leatherArmor: 70,
         chainmail: 160,
+
+        // Helmets (NEW)
+        helmet: 45,
+        steelHelmet: 95,
+
+        // Boots (NEW)
+        boots: 35,
+        steelBoots: 75,
+
+        // Amulets (NEW)
+        amulet: 60,
+        rubyAmulet: 120,
+
+        // Staffs (NEW - Mage only)
+        staff: 85,
+        crystalStaff: 180,
+
+        // Accessories
         goldRing: 100,
         silverRing: 180,
-        luckyCharm: 130
+        luckyCharm: 130,
+
+        // Boss Drops
+        fireCrystal: 250,
+        iceShard: 250,
+        shadowShard: 220,
+        darkLordsHeart: 1000
     },
     
     // Current biome
@@ -101,20 +133,31 @@ function getRandomMonster() {
     // Weighted random monster selection (common: small chance, rare bosses have low chance)
     const roll = Math.random() * 100;
     
-    if (roll < 1) return 'darkLord';     // 1% - ultra rare boss drop
-    if (roll < 2) return 'shadowKnight'; // 1% - very rare elite
-    if (roll < 3) return 'iceDragon';    // 1% - very rare elite  
-    if (roll < 4) return 'fireDrake';    // 1% - very rare elite
-    if (roll < 5) return 'dragon';       // 5% - uncommon boss
-    if (roll < 70) return 'skeleton';     // 20% - uncommon enemy
-    if (roll < 80) return 'orc';          // 10% - common enemy
-    if (roll < 90) return 'goblin';       // 10% - common enemy
-    return 'slime';                       // 10% - very common
+    if (roll < 1.5) return 'darkLord';     // 1.5% - ultra rare boss drop
+    if (roll < 3) return 'shadowKnight';   // 1.5% - very rare elite
+    if (roll < 4.5) return 'iceDragon';    // 1.5% - very rare elite  
+    if (roll < 6) return 'fireDrake';      // 1.5% - very rare elite
+    if (roll < 8) return 'dragon';         // 2% - uncommon boss
+    if (roll < 13) return 'golem';         // 5% - new tanky enemy
+    if (roll < 18) return 'wraith';        // 5% - new dangerous enemy
+    if (roll < 23) return 'zombie';        // 5% - new regenerating enemy
+    if (roll < 28) return 'bat';           // 5% - new fast enemy
+    if (roll < 33) return 'spider';        // 5% - new poison enemy
+    if (roll < 48) return 'skeleton';      // 15% - uncommon enemy
+    if (roll < 60) return 'orc';           // 12% - common enemy
+    if (roll < 73) return 'goblin';        // 13% - common enemy
+    return 'slime';                        // 27% - very common
 }
 
 function getRandomEquipmentType() {
     const types = [
-        'sword', 'shield', 'steelShield', 'leatherArmor', 'chainmail',
+        'sword', 'legendarySword', 'darkLordsSword',
+        'shield', 'steelShield',
+        'leatherArmor', 'chainmail',
+        'helmet', 'steelHelmet',  // NEW
+        'boots', 'steelBoots',     // NEW
+        'amulet', 'rubyAmulet',    // NEW
+        'staff', 'crystalStaff',   // NEW - Mage only
         'goldRing', 'silverRing', 'luckyCharm'
     ];
     return types[Utils.random(0, types.length - 1)];

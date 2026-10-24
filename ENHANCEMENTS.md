@@ -242,3 +242,120 @@ if (this.currentSaveSlot) {
 - [ ] Use WASD keys for movement alongside arrow keys
 - [ ] **NEW:** Type in character name field with WASD keys - should NOT move (modal active)
 - [ ] **NEW:** Die with no saved games - should show startup menu, not save picker
+
+---
+
+## 🔧 Bug Fix #9 - Sword Equipping Logic Error (v2.1)
+**File:** `js/game/inventory.js`
+
+#### Issue: Warriors could not equip Iron Sword due to inverted logic in equipment validation.
+
+#### Root Cause:
+The sword restriction check had backwards logic:
+```javascript
+// BEFORE (WRONG):
+const canUseSword = this.player.className !== 'Warrior';  // FALSE for Warriors!
+```
+This meant Warriors got `canUseSword = false` and were blocked from equipping swords.
+
+#### Fix: Corrected the logic to allow Warriors to use swords:
+```javascript
+// AFTER (CORRECT):
+const canUseSword = this.player.className === 'Warrior';  // TRUE for Warriors!
+```
+Now Warriors can equip swords, while other classes are properly restricted.
+
+**Impact:** Fixes sword equipping bug, maintains class balance restrictions.
+
+---
+
+## 🔧 Bug Fix #9 - Sword Equipping Logic Error (v2.1)
+**File:** `js/game/inventory.js`
+
+#### Issue: Warriors could not equip Iron Sword due to inverted logic in equipment validation.
+
+#### Fix: Corrected the logic from `className !== "Warrior"` to `className === "Warrior"`
+**Impact:** Warriors can now equip swords, other classes are restricted.
+
+---
+
+## 🎮 Content Enhancement #10 - New Enemies & Equipment (v2.2)
+**Files:** `js/entities/monsters.js`, `js/entities/items.js`, `js/game/inventory.js`, `js/game.js`
+
+### 5 New Enemy Types Added:
+| Enemy | HP | Attack | Defense | Special Ability | Spawn Rate |
+|-------|-----|--------|---------|-----------------|------------|
+| 🕷️ **Poison Spider** | 35 | 8 | 2 | Poison Bite (20 dmg) | 5% |
+| 🦇 **Shadow Bat** | 45 | 9 | 3 | High Evasion | 5% |
+| 🧟 **Zombie** | 70 | 11 | 4 | HP Regeneration | 5% |
+| 🗿 **Stone Golem** | 120 | 12 | 15 | Very High Defense | 5% |
+| 👻 **Wraith** | 55 | 13 | 4 | Life Drain on hit | 5% |
+
+### Enhanced Boss Mechanics:
+- **Fire Drake:** Leaves burning trail (player takes damage each turn)
+- **Ice Dragon:** Freezes player movement next turn
+- **Dark Lord:** Enters "Rage Mode" when HP < 50% (+20 attack, +10 defense)
+
+### 4 New Equipment Categories Added:
+| Category | Items | Slot | Description |
+|----------|-------|------|-------------|
+| 🛡️ **Helmets** | Iron Helmet, Steel Helmet | helmet | Head protection (+Defense) |
+| 👢 **Boots** | Leather Boots, Steel Boots | boots | Footwear (+Defense, slight speed bonus) |
+| 📿 **Amulets** | Iron Amulet, Ruby Amulet | amulet | Necklace (+Strength or Magic) |
+| 🪄 **Staffs** | Oak Staff, Crystal Staff | staff | Magic weapons (Mage only!) |
+
+### New Legendary Weapons:
+- ⚔️ **Dark Lord's Sword** - +12 Strength, legendary weapon of darkness
+
+### Updated Spawn Rates:
+- Bosses now spawn at 1.5% each (was 1%)
+- Common enemies adjusted for better balance
+- New enemies fill the mid-tier difficulty gap
+
+---
+
+## 📊 Final Summary - All Enhancements Complete!
+
+| # | Enhancement | Files Modified | Status |
+|---|-------------|----------------|--------|
+| 1 | Fixed duplicate hero rendering | `rendering.js` | ✅ Done |
+| 2 | Save/load error handling | `save.js` | ✅ Done |
+| 3 | Monster out-of-range attack fix | `combat.js` | ✅ Done |
+| 4 | Equipment validation system | `inventory.js` | ✅ Done |
+| 5 | Throttled UI updates | `rendering.js`, `ui.js` | ✅ Done |
+| 6 | WASD keyboard shortcuts | `ui.js` | ✅ Done |
+| **7** | **WASD during character creation** | `ui.js` | ✅ Fixed |
+| **8** | **Game over with no saves** | `save.js` | ✅ Done |
+| **9** | **Sword equipping logic error** | `inventory.js` | ✅ Fixed |
+| **10** | **New enemies & equipment** | 4 files | ✅ Complete |
+
+---
+
+## 🎯 Total Impact:
+- **+5 New Enemy Types** (Spider, Bat, Zombie, Golem, Wraith)
+- **+8 New Equipment Items** (Helmets, Boots, Amulets, Staffs)
+- **Enhanced Boss Mechanics** with special abilities
+- **Improved Spawn Rates** for better game balance
+- **Class Restrictions** maintained (Warriors = swords, Mages = staffs)
+
+---
+
+*Version: 2.2 - Enhanced Content Edition*
+
+---
+
+## 🔧 Bug Fix #11 - New Monsters Not Spawning (v2.3)
+**File:** `js/game/world.js`
+
+#### Issue: New mid-tier monsters (Spider, Bat, Zombie, Golem, Wraith) were not appearing in the game world.
+
+#### Root Cause: These monsters only relied on random spawning with low probability (5% each).
+
+#### Fix: Added guaranteed spawns in specific world regions:
+- 🕷️ **Spider**: 4 spawns in forest edge area (x:25-38, y:10-18)
+- 🦇 **Bat**: 4 spawns in cave entrance area (x:35-42, y:12-20)
+- 🧟 **Zombie**: 3 spawns in swamp region (x:5-18, y:20-26)
+- 🗿 **Golem**: 3 spawns in rocky mountain area (x:15-28, y:15-24)
+- 👻 **Wraith**: 3 spawns in haunted forest clearing (x:8-22, y:5-14)
+
+**Impact:** All new monster types now guaranteed to appear in the game world.

@@ -44,6 +44,42 @@ Object.assign(Game, {
             this.spawnMonster('goblin', x, y);
         }
 
+        // Add new mid-tier monsters in different regions
+        // Poison Spiders - forest edge area
+        for (let i = 0; i < 4; i++) {
+            const x = Utils.random(25, 38);
+            const y = Utils.random(10, 18);
+            this.spawnMonster('spider', x, y);
+        }
+
+        // Shadow Bats - cave entrance area  
+        for (let i = 0; i < 4; i++) {
+            const x = Utils.random(35, 42);
+            const y = Utils.random(12, 20);
+            this.spawnMonster('bat', x, y);
+        }
+
+        // Zombies - swamp region
+        for (let i = 0; i < 3; i++) {
+            const x = Utils.random(5, 18);
+            const y = Utils.random(20, 26);
+            this.spawnMonster('zombie', x, y);
+        }
+
+        // Stone Golems - rocky mountain area (higher level)
+        for (let i = 0; i < 3; i++) {
+            const x = Utils.random(15, 28);
+            const y = Utils.random(15, 24);
+            this.spawnMonster('golem', x, y);
+        }
+
+        // Wraiths - haunted forest clearing
+        for (let i = 0; i < 3; i++) {
+            const x = Utils.random(8, 22);
+            const y = Utils.random(5, 14);
+            this.spawnMonster('wraith', x, y);
+        }
+
 
     // Add boss spawn regions based on exploration progress
     this.addBossRegions = function() {

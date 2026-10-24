@@ -62,6 +62,77 @@ Object.assign(Entities, {
             size: 0.7
         },
 
+        // NEW ENEMY TYPES - Enhanced variety and challenge
+        
+        spider: {
+            name: 'Poison Spider',
+            hp: 35,
+            maxHp: 35,
+            attack: 8,
+            defense: 2,
+            xp: 40,
+            gold: 15,
+            symbol: '🕷️',
+            color: '#a855f7',
+            size: 0.6,
+            special: 'Poison Bite'
+        },
+
+        bat: {
+            name: 'Shadow Bat',
+            hp: 45,
+            maxHp: 45,
+            attack: 9,
+            defense: 3,
+            xp: 45,
+            gold: 18,
+            symbol: '🦇',
+            color: '#6b7280',
+            size: 0.5,
+            special: 'High Evasion'
+        },
+
+        zombie: {
+            name: 'Zombie',
+            hp: 70,
+            maxHp: 70,
+            attack: 11,
+            defense: 4,
+            xp: 65,
+            gold: 22,
+            symbol: '🧟',
+            color: '#374151',
+            size: 0.8,
+            special: 'HP Regeneration'
+        },
+
+        golem: {
+            name: 'Stone Golem',
+            hp: 120,
+            maxHp: 120,
+            attack: 12,
+            defense: 15,
+            xp: 150,
+            gold: 45,
+            symbol: '🗿',
+            color: '#78716c',
+            size: 1.2,
+            special: 'High Defense'
+        },
+
+        wraith: {
+            name: 'Wraith',
+            hp: 55,
+            maxHp: 55,
+            attack: 13,
+            defense: 4,
+            xp: 70,
+            gold: 28,
+            symbol: '👻',
+            color: '#9ca3af',
+            size: 0.7,
+            special: 'Life Drain'
+        },
 
         // ULTIMATE BOSS - Final challenge of the main questline
         darkLord: {
@@ -78,7 +149,8 @@ Object.assign(Entities, {
             special: 'Dark Presence'
         },
 
-        // Elite Boss Monsters
+        // Elite Boss Monsters with Special Abilities
+        
         fireDrake: {
             name: 'Fire Drake',
             hp: 450,
@@ -92,6 +164,7 @@ Object.assign(Entities, {
             size: 1.4,
             special: 'Fire Breath'
         },
+
         iceDragon: {
             name: 'Ice Dragon',
             hp: 420,
@@ -105,6 +178,7 @@ Object.assign(Entities, {
             size: 1.4,
             special: 'Ice Nova'
         },
+
         shadowKnight: {
             name: 'Shadow Knight',
             hp: 350,

@@ -40,6 +40,15 @@ Object.assign(Entities, {
             symbol: '🗡️',
             color: '#fef08a'
         },
+        darkLordsSword: {
+            name: "Dark Lord's Sword",
+            description: '+12 Strength, legendary weapon of darkness',
+            effect: () => ({ strength: 12 }),
+            equipmentSlot: 'weapon',
+            bonuses: { strength: 12, legendary: true },
+            symbol: '🗡️⚫',
+            color: '#7f1d1d'
+        },
         shield: {
             name: 'Wooden Shield',
             description: '+2 Defense',
@@ -75,6 +84,88 @@ Object.assign(Entities, {
             bonuses: { defense: 4 },
             symbol: '⛓️',
             color: '#94a3b8'
+        },
+        
+        // NEW EQUIPMENT CATEGORIES
+        
+        helmet: {
+            name: 'Iron Helmet',
+            description: '+3 Defense, protects head',
+            effect: () => ({ defense: 3 }),
+            equipmentSlot: 'helmet',
+            bonuses: { defense: 3 },
+            symbol: '⛑️',
+            color: '#6b7280'
+        },
+
+        steelHelmet: {
+            name: 'Steel Helmet',
+            description: '+5 Defense, reinforced protection',
+            effect: () => ({ defense: 5 }),
+            equipmentSlot: 'helmet',
+            bonuses: { defense: 5 },
+            symbol: '⛑️',
+            color: '#9ca3af'
+        },
+
+        boots: {
+            name: 'Leather Boots',
+            description: '+2 Defense, improves movement speed slightly',
+            effect: () => ({ defense: 2 }),
+            equipmentSlot: 'boots',
+            bonuses: { defense: 2 },
+            symbol: '👢',
+            color: '#d97706'
+        },
+
+        steelBoots: {
+            name: 'Steel Boots',
+            description: '+4 Defense, armored footwear',
+            effect: () => ({ defense: 4 }),
+            equipmentSlot: 'boots',
+            bonuses: { defense: 4 },
+            symbol: '👢',
+            color: '#6b7280'
+        },
+
+        amulet: {
+            name: 'Iron Amulet',
+            description: '+3 Strength or Magic (choose one)',
+            effect: () => ({ strength: 3 }),
+            equipmentSlot: 'amulet',
+            bonuses: { strength: 3, magic: 0 }, // Can be changed to magic
+            symbol: '📿',
+            color: '#fbbf24'
+        },
+
+        rubyAmulet: {
+            name: 'Ruby Amulet',
+            description: '+5 Strength or Magic (choose one)',
+            effect: () => ({ strength: 5 }),
+            equipmentSlot: 'amulet',
+            bonuses: { strength: 5, magic: 0 },
+            symbol: '📿',
+            color: '#ef4444'
+        },
+
+        staff: {
+            name: 'Oak Staff',
+            description: '+3 Magic for spellcasters',
+            effect: () => ({ magic: 3 }),
+            equipmentSlot: 'staff',
+            bonuses: { magic: 3 },
+            symbol: '🪄',
+            color: '#a855f7'
+        },
+
+        crystalStaff: {
+            name: 'Crystal Staff',
+            description: '+6 Magic, crackles with arcane energy',
+            effect: () => ({ magic: 6 }),
+            equipmentSlot: 'staff',
+            bonuses: { magic: 6 },
+            symbol: '🪄✨',
+            color: '#8b5cf6'
         },
         goldRing: {
             name: 'Gold Ring',

@@ -72,9 +72,18 @@ Object.assign(Game, {
 
         // Check if this is a weapon and player has no spell access (warrior restriction)
         if (slot === 'weapon' && item.type === 'sword') {
-            const canUseSword = this.player.className !== 'Warrior';
+            const canUseSword = this.player.className === 'Warrior';  // Warriors CAN use swords, others cannot
             if (!canUseSword) {
-                Utils.showMessage('Warriors cannot equip swords. Choose a different weapon.', 'warning');
+                Utils.showMessage('Only Warriors can equip swords. Choose a different weapon.', 'warning');
+                return;
+            }
+        }
+
+        // Check if this is a staff and player is not a mage (mage restriction)
+        if (slot === 'staff' && item.type !== 'darkLordsSword') {
+            const canUseStaff = this.player.className === 'Mage';  // Only Mages can use staves
+            if (!canUseStaff) {
+                Utils.showMessage('Only Mages can equip magic staffes. Choose a different weapon.', 'warning');
                 return;
             }
         }
