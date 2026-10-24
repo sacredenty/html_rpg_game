@@ -230,7 +230,13 @@ Object.assign(Game, {
                 weapon: 'Weapon',
                 armor: 'Armor',
                 shield: 'Shield', 
-                accessory: 'Accessory'
+                accessory: 'Accessory',
+                
+                // NEW EQUIPMENT SLOTS
+                helmet: 'Helmet',
+                boots: 'Boots',
+                amulet: 'Amulet',
+                staff: 'Staff'
             };
             slots.innerHTML = Object.entries(slotLabels).map(([slot, label]) => {
                 const item = this.player.equipment[slot];

@@ -130,7 +130,13 @@ Object.assign(Game, {
                     equipment: {
                         weapon: saved.player.equipment?.weapon || null,
                         armor: saved.player.equipment?.armor || null,
-                        accessory: saved.player.equipment?.accessory || null
+                        accessory: saved.player.equipment?.accessory || null,
+                        
+                        // NEW EQUIPMENT SLOTS
+                        helmet: saved.player.equipment?.helmet || null,
+                        boots: saved.player.equipment?.boots || null,
+                        amulet: saved.player.equipment?.amulet || null,
+                        staff: saved.player.equipment?.staff || null
                     }
                 }
             );
@@ -147,7 +153,13 @@ Object.assign(Game, {
                     equipment: {
                         weapon: null,
                         armor: null,
-                        accessory: null
+                        accessory: null,
+                        
+                        // NEW EQUIPMENT SLOTS (default to empty)
+                        helmet: null,
+                        boots: null,
+                        amulet: null,
+                        staff: null
                     }
                 }
             );

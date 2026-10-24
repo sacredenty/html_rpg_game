@@ -10,7 +10,7 @@ A browser-based, tile-based RPG inspired by classic fantasy adventures. Explore 
 - **Hero creation:** Choose a hero name and one of three classes—Warrior, Mage, or Ranger—each with distinct starting attributes, health, mana, and spell access.
 - **Combat:** Attack nearby enemies. Monsters may wander after successful movement and have a chance to attack when adjacent; monsters can also retaliate after surviving an attack or damage spell.
 - **Spells:** Mages can cast Arcane Bolt, Flame Burst, and Healing Light; Rangers can cast Healing Light. Warriors have no MP or spell access.
-- **Inventory and equipment:** Collect and use consumables, equip weapons, armor, and accessories, and manage three equipment slots.
+- **Inventory and equipment:** Collect and use consumables, equip weapons, armor, shields, accessories, helmets, boots, amulets, and staffs, and manage eight equipment slots.
 - **Quests and trading:** Accept quests from King Alaric, track objectives, and buy or sell items with merchants.
 - **Save/load:** Keep up to three adventures in browser local storage, including gold, character, inventory, world, and explored terrain. Slot 1 accepts older single-slot saves.
 - **Fantasy audio:** An original synthesized looping soundtrack and gameplay sound effects, with separate music and effects toggles.

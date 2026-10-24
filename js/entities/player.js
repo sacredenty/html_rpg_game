@@ -73,7 +73,13 @@ Object.assign(Entities, {
                 weapon: null,
                 armor: null,
                 shield: null,
-                accessory: null
+                accessory: null,
+                
+                // NEW EQUIPMENT SLOTS
+                helmet: null,      // Head protection (+Defense)
+                boots: null,        // Footwear (+Defense, speed bonus)
+                amulet: null,       // Necklace (+Strength or Magic)
+                staff: null         // Magic weapon (Mage only!)
             };
 
             // Quests tracking
