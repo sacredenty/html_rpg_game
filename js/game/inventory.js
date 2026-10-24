@@ -62,12 +62,33 @@ Object.assign(Game, {
 
         const item = this.player.inventory[itemIndex];
         const itemTemplate = Entities.Items[item.type];
+        
+        // Validate that the item has an equipment slot defined
         const slot = itemTemplate?.equipmentSlot;
-        if (!slot) return;
+        if (!slot) {
+            Utils.showMessage(`${item.name} cannot be equipped. It's not a valid equipment piece.`, 'warning');
+            return;
+        }
 
+        // Check if this is a weapon and player has no spell access (warrior restriction)
+        if (slot === 'weapon' && item.type === 'sword') {
+            const canUseSword = this.player.className !== 'Warrior';
+            if (!canUseSword) {
+                Utils.showMessage('Warriors cannot equip swords. Choose a different weapon.', 'warning');
+                return;
+            }
+        }
+
+        // Check if the slot is already occupied and handle swap
         const previousItem = this.player.equipment[slot];
         if (previousItem) {
             this.player.inventory.push(previousItem);
+        }
+
+        // Validate item data before equipping
+        if (!itemTemplate || !itemTemplate.bonuses) {
+            Utils.showMessage(`Cannot equip ${item.name}: item data is missing.`, 'error');
+            return;
         }
 
         this.player.inventory.splice(itemIndex, 1);

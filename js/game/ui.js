@@ -1,5 +1,17 @@
-// Ui game behavior
+// Ui game behavior with optimized rendering
 Object.assign(Game, {
+    // Throttle function to limit how often a function can be called
+    throttle: (func, limit) => {
+        let inThrottle;
+        return (...args) => {
+            if (!inThrottle) {
+                func(...args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    },
+
     setupEventListeners() {
         document.addEventListener('pointerdown', () => GameAudio.unlock(), { once: true });
         document.addEventListener('keydown', () => GameAudio.unlock(), { once: true });
@@ -55,18 +67,26 @@ Object.assign(Game, {
         document.addEventListener('keydown', event => {
             switch (event.key) {
                 case 'ArrowUp':
+                case 'w':
+                case 'W':
                     event.preventDefault();
                     this.moveNorth();
                     break;
                 case 'ArrowDown':
+                case 's':
+                case 'S':
                     event.preventDefault();
                     this.moveSouth();
                     break;
                 case 'ArrowLeft':
+                case 'a':
+                case 'A':
                     event.preventDefault();
                     this.moveWest();
                     break;
                 case 'ArrowRight':
+                case 'd':
+                case 'D':
                     event.preventDefault();
                     this.moveEast();
                     break;

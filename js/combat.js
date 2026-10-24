@@ -126,18 +126,28 @@ const GameCombat = {
     },
 
     monsterTurn(monster) {
-        if (this.player.hp <= 0 || !monster.alive ||
-            Utils.distance(this.player, monster) > 1.5 || Math.random() >= 0.3) return;
-
+        // Check conditions in order - distance first, then random chance
+        if (this.player.hp <= 0 || !monster.alive) return;
+        
+        const dist = Utils.distance(this.player, monster);
+        if (dist > 1.5) return; // Must be within range
+        
+        // Only attack with 30% chance when in range
+        if (Math.random() >= 0.3) return;
+        
         const actualDamage = this.calculateMonsterDamage(monster);
         this.player.hp -= actualDamage;
-
+        
         if (actualDamage > 0) {
             GameAudio.hit();
             this.renderCombatFeedback(this.player.x, this.player.y, `-${actualDamage}`, '#fca5a5');
             Utils.showMessage(`${monster.name} attacks you!`, 'warning');
         }
-        if (this.player.hp <= 0) this.gameOver();
+        
+        // Check for death after damage is applied
+        if (this.player.hp <= 0) {
+            this.gameOver();
+        }
     },
 
     castSpell(spellId) {

@@ -1,7 +1,15 @@
-// Rendering game behavior
+// Rendering game behavior with optimized UI updates
 Object.assign(Game, {
+    // Track last health bar update time for throttling
+    lastHealthUpdate: 0,
+
     render() {
-        this.updateHUDHealthBars();
+        // Throttle HUD health bar updates to prevent excessive DOM manipulation
+        const now = Date.now();
+        if (now - this.lastHealthUpdate > 100) { // Update at most every 100ms
+            this.updateHUDHealthBars();
+            this.lastHealthUpdate = now;
+        }
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.save();
@@ -20,7 +28,7 @@ Object.assign(Game, {
         this.monsters.filter(monster => monster.alive && this.isInViewport(monster)).forEach(monster => {
             SpriteRenderer.drawMonster(this, monster);
         });
-        SpriteRenderer.drawHero(this);
+        // Fixed: Removed duplicate hero rendering call
         SpriteRenderer.drawHero(this);
         this.ctx.restore();
     },

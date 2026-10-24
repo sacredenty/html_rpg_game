@@ -31,5 +31,9 @@
   "devDependencies": {
     "@playwright/test": "^1.64.1",
     "playwright": "^1.64.1"
+  },
+  "dependencies": {
+    "chromium": "^3.0.3",
+    "install": "^0.13.0"
   }
 }
