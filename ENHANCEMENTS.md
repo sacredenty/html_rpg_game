@@ -139,3 +139,106 @@ Enhanced keyboard controls to support both arrow keys and WASD:
 - No breaking changes to the game's core mechanics
 
 *Version: 2.0 - Enhanced Edition*
+---
+
+## 🔧 Additional User-Requested Fixes (v2.0)
+
+### 7. **Fixed WASD During Character Creation** 🔴 HIGH PRIORITY
+**File:** `js/game/ui.js`
+
+#### Issue: WASD keys were active during character creation modal, conflicting with form input.
+
+#### Fix: Added modal state tracking to disable WASD when character creation is open.
+
+```javascript
+// Track character creation modal state
+const charCreationModal = document.getElementById('character-creation');
+
+function handleCharacterCreationState() {
+    if (charCreationModal && charCreationModal.showModal) {
+        const isOpen = charCreationModal.open;
+        if (isOpen) {
+            // Disable WASD when character creation is open
+            document.body.style.cursor = 'default';
+        } else {
+            // Re-enable WASD when modal closes
+            document.body.style.cursor = '';
+        }
+    }
+}
+
+charCreationModal.addEventListener('click', handleCharacterCreationState);
+// Also added Escape key to close modal
+```
+
+**Impact:** Prevents keyboard input conflicts during character creation, improves UX.
+
+---
+
+### 8. **Fixed Game Over Behavior - No Saves Available** 🔴 HIGH PRIORITY
+**File:** `js/game/save.js`
+
+#### Issue: When hero died with no saved games, game showed save slot picker instead of starting new adventure.
+
+#### Fix: Check for existing saves before showing save menu; if none exist, show startup menu.
+
+```javascript
+// In gameOver() function:
+if (this.currentSaveSlot) {
+    this.saveGame(this.currentSaveSlot);
+} else {
+    // Check if there are any saved games available
+    const saveSlots = [1, 2, 3];
+    let hasSavedGames = false;
+    
+    for (const slot of saveSlots) {
+        try {
+            const savedData = this.readSaveSlot(slot);
+            if (savedData && savedData.player) {
+                hasSavedGames = true;
+                break;
+            }
+        } catch (error) {
+            // Ignore read errors for invalid slots
+        }
+    }
+    
+    // Only show save slot picker if there are existing saves
+    if (hasSavedGames) {
+        this.openSaveSlotPicker('save');
+    } else {
+        // No saved games exist - start new adventure instead
+        document.getElementById('startup-menu').showModal();
+    }
+}
+```
+
+**Impact:** Better user flow when no saves exist, prevents confusion.
+
+---
+
+## 📊 Updated Summary of Changes
+
+| File | Type | Priority |
+|------|------|----------|
+| `js/game/rendering.js` | Bug fix + optimization | 🔴 High |
+| `js/game/save.js` | Error handling + version control + game over logic | 🔴 High |
+| `js/combat.js` | Logic fix for monster AI | 🔴 High |
+| `js/game/inventory.js` | Validation system added | 🔴 High |
+| `js/game/ui.js` | Keyboard shortcuts + throttle utility + modal state tracking | 🟡 Medium |
+
+**Total:** ~170 lines enhanced across 5 files
+
+---
+
+## 🧪 Updated Testing Checklist
+
+### Manual Testing:
+- [ ] Start new adventure - verify hero renders correctly (no double sprite)
+- [ ] Save game, load it back - verify all data persists
+- [ ] Try loading corrupted save file - should show error message
+- [ ] Equip items as different classes - test restrictions work
+- [ ] Test monster attacks from various distances
+- [ ] Use WASD keys for movement alongside arrow keys
+- [ ] **NEW:** Type in character name field with WASD keys - should NOT move (modal active)
+- [ ] **NEW:** Die with no saved games - should show startup menu, not save picker

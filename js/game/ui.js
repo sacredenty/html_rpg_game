@@ -16,6 +16,32 @@ Object.assign(Game, {
         document.addEventListener('pointerdown', () => GameAudio.unlock(), { once: true });
         document.addEventListener('keydown', () => GameAudio.unlock(), { once: true });
 
+        // Track character creation modal state to disable WASD during creation
+        const charCreationModal = document.getElementById('character-creation');
+        
+        function handleCharacterCreationState() {
+            if (charCreationModal && charCreationModal.showModal) {
+                const isOpen = charCreationModal.open;
+                if (isOpen) {
+                    // Disable WASD when character creation is open
+                    document.body.style.cursor = 'default';
+                } else {
+                    // Re-enable WASD when modal closes
+                    document.body.style.cursor = '';
+                }
+            }
+        }
+
+        charCreationModal.addEventListener('click', handleCharacterCreationState);
+        
+        // Add Escape key to close modal
+        charCreationModal.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                charCreationModal.close();
+            }
+        });
+
         document.getElementById('load-saved-game').addEventListener('click', () => {
             this.openSaveSlotPicker('load', true);
         });
@@ -65,6 +91,12 @@ Object.assign(Game, {
 
         // Keyboard arrow key bindings for directional movement
         document.addEventListener('keydown', event => {
+            // Skip WASD keys when character creation modal is open
+            const charCreationModal = document.getElementById('character-creation');
+            if (charCreationModal && charCreationModal.open) {
+                return;
+            }
+
             switch (event.key) {
                 case 'ArrowUp':
                 case 'w':

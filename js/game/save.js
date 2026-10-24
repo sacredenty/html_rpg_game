@@ -215,14 +215,39 @@ Object.assign(Game, {
         return true;
     },
 
-    // Game over
+    // Game over - autosave and show appropriate menu
 
     gameOver() {
         this.gameState = 'gameover';
         Utils.showMessage(`Game Over! You reached level ${this.player.level}.`, 'error');
-        
+
         // Preserve the loaded slot; new adventures can choose a slot when they die.
-        if (this.currentSaveSlot) this.saveGame(this.currentSaveSlot);
-        else this.openSaveSlotPicker('save');
-    }
+        if (this.currentSaveSlot) {
+            this.saveGame(this.currentSaveSlot);
+        } else {
+            // Check if there are any saved games available
+            const saveSlots = [1, 2, 3];
+            let hasSavedGames = false;
+
+            for (const slot of saveSlots) {
+                try {
+                    const savedData = this.readSaveSlot(slot);
+                    if (savedData && savedData.player) {
+                        hasSavedGames = true;
+                        break;
+                    }
+                } catch (error) {
+                    // Ignore read errors for invalid slots
+                }
+            }
+
+            // Only show save slot picker if there are existing saves
+            if (hasSavedGames) {
+                this.openSaveSlotPicker('save');
+            } else {
+                // No saved games exist - start new adventure instead
+                document.getElementById('startup-menu').showModal();
+            }
+        }
+    },
 });
